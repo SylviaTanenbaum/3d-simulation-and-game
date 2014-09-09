@@ -1,0 +1,21 @@
+
+files
+{
+	[ScriptEventHandler]
+	PX2ScriptEventHandler.cpp
+	PX2ScriptEventHandler.hpp
+
+	[ToLua]
+	(../PX2ToLua)
+	PX2ToLua.cpp
+	PX2ToLua.hpp
+
+	[]
+	(.)
+	PX2AppFramePre.hpp
+	PX2Application.cpp
+	PX2Application.hpp
+	PX2ApplicationBase.cpp
+	PX2ApplicationBase.hpp
+	PX2Main.cpp
+}

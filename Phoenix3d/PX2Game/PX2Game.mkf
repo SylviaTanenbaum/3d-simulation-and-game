@@ -1,0 +1,281 @@
+
+files
+{
+	[Accounts]
+	PX2AccoutManager.cpp
+	PX2AccoutManager.hpp
+	PX2AccoutManager.inl
+	PX2ServerInfo.cpp
+	PX2ServerInfo.hpp
+	PX2User.cpp
+	PX2User.hpp
+	PX2User.inl
+	PX2UserActor.cpp
+	PX2UserActor.hpp
+	PX2UserActor.inl
+
+	[Actors/3D]
+	PX2SkyActor.cpp
+	PX2SkyActor.hpp
+	PX2SkyActor.inl
+	PX2TerrainActor.cpp
+	PX2TerrainActor.hpp
+	PX2TerrainActor.inl
+
+	[Actors/Logics]
+	PX2LogicActor.cpp
+	PX2LogicActor.hpp
+	PX2LogicActor.inl
+
+	[Actors]
+	PX2Actor.cpp
+	PX2Actor.hpp
+	PX2Actor.inl
+	PX2AmbientRegionActor.cpp
+	PX2AmbientRegionActor.hpp
+	PX2AmbientRegionActor.inl
+	PX2CameraActor.cpp
+	PX2CameraActor.hpp
+	PX2CameraActor.inl
+	PX2EffectActor.cpp
+	PX2EffectActor.hpp
+	PX2EffectActor.inl
+	PX2SoundActor.cpp
+	PX2SoundActor.hpp
+	PX2SoundActor.inl
+	PX2TriggerActor.cpp
+	PX2TriggerActor.hpp
+	PX2TriggerActor.inl
+
+	[AddDeleting]
+	PX2AddingManager.cpp
+	PX2AddingManager.hpp
+	PX2DeletingManager.cpp
+	PX2DeletingManager.hpp
+
+	[Affect]
+	PX2AffectObject.cpp
+	PX2AffectObject.hpp
+	
+	[AI/GridMove]
+	PX2GridMoveBehavior.cpp
+	PX2GridMoveBehavior.hpp
+	PX2GridMoveBehavior.inl
+	(GridMove)
+	BitArray.h
+	GridMap.cpp
+	GridMap.h
+	GridMovePre.h
+	HeapNode.h
+	MoveManager.cpp
+	MoveManager.h
+	MoveUnit.cpp
+	MoveUnit.h
+	Point2D.h
+
+	[AI/RVO]
+	(RVO)
+	Agent.cpp
+	Agent.h
+	Definitions.h
+	KdTree.cpp
+	Obstacle.cpp
+	Obstacle.h
+	RVO.h
+	RVOSimulator.cpp
+	RVOSimulator.h
+	Vector2.h
+
+	[AI/StateMachine]
+	(.)
+	PX2State.hpp
+	PX2State.inl
+	PX2StateMachine.hpp
+	PX2StateMachine.inl
+
+	[Animation]
+	PX2A2DF8_Mesh.cpp
+	PX2A2DF8_Mesh.hpp
+	PX2Animation.cpp
+	PX2Animation.hpp
+	PX2Animation.inl
+	PX2Animation2DFrames8.cpp
+	PX2Animation2DFrames8.hpp
+	PX2Animation2DFrames8.inl
+
+	[Buf]
+	PX2AimBuf.cpp
+	PX2AimBuf.hpp
+	PX2AimBuf.inl
+	PX2Buf.cpp
+	PX2Buf.hpp
+	PX2Buf.inl
+	PX2EffectBuf.cpp
+	PX2EffectBuf.hpp
+	PX2EffectBuf.inl
+	PX2FreezeBuf.cpp
+	PX2FreezeBuf.hpp
+	PX2GroupBuf.cpp
+	PX2GroupBuf.hpp
+	PX2HPBuf.cpp
+	PX2HPBuf.hpp
+	PX2HPBuf.inl
+	PX2SkillCDTimeBuf.cpp
+	PX2SkillCDTimeBuf.hpp
+	PX2SkillCDTimeBuf.inl
+	PX2SkillCriticalBuf.cpp
+	PX2SkillCriticalBuf.hpp
+	PX2SkillCriticalBuf.inl
+	PX2SpeedBuf.cpp
+	PX2SpeedBuf.hpp
+	PX2SpeedBuf.inl
+
+	[Characters/2DBios]
+	PX2Biosome2DFrames8.cpp
+	PX2Biosome2DFrames8.hpp
+	PX2Biosome2DFrames8.inl
+
+	[Characters/Biosome/ActionStates]
+	PX2BioActionState.cpp
+	PX2BioActionState.hpp
+	PX2BioFightingState.cpp
+	PX2BioFightingState.hpp
+	PX2BioIdleState.cpp
+	PX2BioIdleState.hpp
+	PX2BioMagicingState.cpp
+	PX2BioMagicingState.hpp
+	PX2BioSpawningState.cpp
+	PX2BioSpawningState.hpp
+
+	[Characters/Biosome/MovementStates]
+	PX2BioMovementState.cpp
+	PX2BioMovementState.hpp
+	PX2BioMovingState.cpp
+	PX2BioMovingState.hpp
+	PX2BioStopState.cpp
+	PX2BioStopState.hpp
+
+	[Characters/Biosome/PostureStates]
+	PX2BioPostureState.cpp
+	PX2BioPostureState.hpp
+	PX2BioRunningState.cpp
+	PX2BioRunningState.hpp
+	PX2BioStandingState.cpp
+	PX2BioStandingState.hpp
+	PX2BioWalkingState.cpp
+	PX2BioWalkingState.hpp
+	
+	[Characters/Biosome]
+	PX2Biosome.cpp
+	PX2Biosome.hpp
+	PX2Biosome.inl
+
+	[Characters]
+	PX2Character.cpp
+	PX2Character.hpp
+	PX2Character.inl
+
+	[Deleting]
+	PX2DeletingManager.cpp
+	PX2DeletingManager.hpp
+
+	[Events]
+	PX2GameEventType.cpp
+	PX2GameEventType.hpp
+
+	[Game]
+	PX2GameManager.cpp
+	PX2GameManager.hpp
+	PX2GameManager.inl
+
+	[Gameable]
+	PX2Gameable.cpp
+	PX2Gameable.hpp
+	PX2Gameable.inl
+
+	[Items]
+	PX2Item.cpp
+	PX2Item.hpp
+	PX2Item.inl
+
+	[Logic]
+	PX2LogicManager.cpp
+	PX2LogicManager.hpp
+	PX2LogicManager.inl
+
+	[Netable]
+	PX2Netable.cpp
+	PX2Netable.hpp
+	PX2Netable.inl
+
+	[Pick]
+	PX2ActorPicker.cpp
+	PX2ActorPicker.hpp
+	PX2ActorPickRecord.hpp
+
+	[Platform]
+	PX2ServerPlatform.cpp
+	PX2ServerPlatform.hpp
+	PX2ServerPlatformEventType.cpp
+	PX2ServerPlatformEventType.hpp
+
+	[Project]
+	PX2Project.cpp
+	PX2Project.hpp
+	PX2Project.inl
+
+	[PropModify]
+	PX2PropModify.hpp
+
+	[Scenes/3D]
+	PX2Scene3D.cpp
+	PX2Scene3D.hpp
+	PX2Scene3D.inl
+
+	[Scenes]
+	PX2Scene.cpp
+	PX2Scene.hpp
+	PX2Scene.inl
+
+	[Skill/Steps]
+	PX2SkillStep.cpp
+	PX2SkillStep.hpp
+	PX2SkillStep.inl
+	PX2SkillStepFarTrack.cpp
+	PX2SkillStepFarTrack.hpp
+	PX2SkillStepFarTrack.inl
+	PX2SkillStepLink.cpp
+	PX2SkillStepLink.hpp
+	PX2SkillStepLink.inl
+	PX2SkillStepRangeTime.cpp
+	PX2SkillStepRangeTime.hpp
+	PX2SkillStepRangeTime.inl
+
+	[Skill]
+	PX2Skill.cpp
+	PX2Skill.hpp
+	PX2Skill.inl
+	PX2SkillActor.cpp
+	PX2SkillActor.hpp
+	PX2SkillActor.inl
+	PX2SkillActorLink.cpp
+	PX2SkillActorLink.hpp
+	PX2SkillActorLink.inl
+	PX2SkillInstance.cpp
+	PX2SkillInstance.hpp
+	PX2SkillInstance.inl
+
+	[Sound]
+	PX2SoundManager.cpp
+	PX2SoundManager.hpp
+
+	[SpacePartition/Cell2D]
+	PX2CellSpace.cpp
+	PX2CellSpace.hpp
+	PX2CellSpaceT.hpp
+	PX2CellSpaceT.inl
+
+	[]
+	PX2Game.hpp
+	PX2GamePre.hpp
+}

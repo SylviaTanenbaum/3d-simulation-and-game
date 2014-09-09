@@ -1,0 +1,19 @@
+
+files
+{
+	[MARM]
+	PX2MARMSound.cpp
+	PX2MARMSound.hpp
+	PX2MARMSoundSystem.cpp
+	PX2MARMSoundSystem.hpp
+	PX2WavReader.cpp
+	PX2WavReader.hpp
+	
+	[]
+	PX2Sound.cpp
+	PX2Sound.hpp
+	PX2SoundSystem.cpp
+	PX2SoundSystem.hpp
+	PX2SoundSystem.inl
+	PX2SoundSystemPre.hpp
+}

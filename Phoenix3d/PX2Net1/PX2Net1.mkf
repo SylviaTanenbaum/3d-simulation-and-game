@@ -1,0 +1,69 @@
+
+files
+{
+	[Address/IPAddr]
+	PX2IPAddress.cpp
+	PX2IPAddress.hpp
+	PX2IPAddressImpl.cpp
+	PX2IPAddressImpl.hpp
+	PX2IPv4AddressImpl.cpp
+	PX2IPv4AddressImpl.hpp
+	PX2IPv6AddressImpl.cpp
+	PX2IPv6AddressImpl.hpp
+
+	[Address/SocketAddr]
+	PX2IPv4SocketAddressImpl.cpp
+	PX2IPv4SocketAddressImpl.hpp
+	PX2IPv6SocketAddressImpl.cpp
+	PX2IPv6SocketAddressImpl.hpp
+	PX2SocketAddress.cpp
+	PX2SocketAddress.hpp
+	PX2SocketAddressImpl.cpp
+	PX2SocketAddressImpl.hpp
+
+	[Base]
+	PX2DNS.cpp
+	PX2DNS.hpp
+	PX2HostEntry.cpp
+	PX2HostEntry.hpp
+
+	[Client]
+	PX2NetClientConnect.cpp
+	PX2NetClientConnect.hpp
+	PX2NetClientConnect.inl
+
+	[Error]
+	PX2NetError.cpp
+	PX2NetError.hpp
+
+	[EventBuffer]
+	PX2NetEventBuffer.cpp
+	PX2NetEventBuffer.hpp
+	PX2NetEventBuffer.inl
+
+	[InitTerm]
+	PX2NetInitTerm.cpp
+	PX2NetInitTerm.hpp
+
+	[Sockets]
+	PX2Socket.cpp
+	PX2Socket.hpp
+	PX2Socket.inl
+	PX2SocketImpl.cpp
+	PX2SocketImpl.hpp
+	PX2SocketImpl.inl
+	PX2StreamSocket.cpp
+	PX2StreamSocket.hpp
+	PX2StreamSocketImpl.cpp
+	PX2StreamSocketImpl.hpp
+
+	[]
+	PX2Net.hpp
+	PX2NetDefine.hpp
+	PX2NetPre.hpp
+}
+
+subprojects
+{
+	google/protobuf.mkf
+}

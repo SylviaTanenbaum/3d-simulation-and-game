@@ -1,0 +1,6 @@
+
+files
+{
+	GamePlayApp.cpp
+	GamePlayApp.hpp
+}

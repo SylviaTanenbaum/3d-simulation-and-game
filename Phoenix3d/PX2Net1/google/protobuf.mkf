@@ -1,0 +1,29 @@
+
+includepath protobuf
+
+library
+{
+	".,protobuf"
+}
+
+files
+{
+	(protobuf)
+	descriptor.h
+	descriptor.pb.h
+	descriptor_database.h
+	dynamic_message.h
+	extension_set.h
+	generated_message_util.h
+	message.h
+	message_lite.h
+	package_info.h
+	reflection_ops.h
+	repeated_field.h
+	service.h
+	text_format.h
+	unknown_field_set.h
+	wire_format.h
+	wire_format_lite.h
+	wire_format_lite_inl.h
+}

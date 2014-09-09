@@ -1,0 +1,43 @@
+// PX2Gameable.pkg
+
+	class Gameable : public Netable
+	{
+		Gameable ();
+		virtual ~Gameable ();
+
+		void Enable (bool enable);
+		bool IsEnable () const;
+
+		void SetServerID (int serverID);
+		int GetServerID () const;
+
+		// 方便使用，设置额外数据，（脚本中可调用）
+		void SetExtraDataInt (const std::string &name, int data);
+		int GetExtraDataInt (const std::string &name) const;
+		void SetExtraDataFloat (const std::string &name, float data);
+		float GetExtraDataFloat (const std::string &name) const;
+
+		// init
+		void SetScriptHandler_Init (const std::string &handler);
+		const std::string &GetScriptHandler_Init () const;
+
+		virtual void Initlize ();
+
+		// serialize
+		bool SaveToXML (const std::string &filename);
+		bool LoadFromXML (const std::string &filename);
+		bool LoadFromXML (const std::string &filename, 
+			const std::string &classLayer);
+
+		// Scripts
+		
+		// 用户自己设置的名称,如果设置了
+		// GetScriptName 和 GetUserScriptName是一样的
+		void SetUserScriptName(const std::string &scriptName);
+		const std::string &GetUserScriptName () const;
+		const std::string &GetScriptName () const;
+
+		bool RegistToScriptSystem ();
+		bool UnRegistToScriptSystem ();
+		bool IsRegistedToScriptSystem ();
+	};

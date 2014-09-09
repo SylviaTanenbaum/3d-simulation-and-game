@@ -1,0 +1,54 @@
+
+files
+{
+	[include]
+	(include)
+	ft2build.h
+
+	[src/autofit]
+	(src/autofit)
+	autofit.c
+
+	[src/base]
+	(src/base)
+	ftbase.c
+	ftbbox.c
+	ftbitmap.c
+	ftfstype.c
+	ftgasp.c
+	ftglyph.c
+	ftinit.c
+	ftlcdfil.c
+	ftstroke.c
+	ftsystem.c
+	fttype1.c
+	ftxf86.c
+
+	[src/cff]
+	(src/cff)
+	cff.c
+
+	[src/pshinter]
+	(src/pshinter)
+	pshinter.c
+
+	[src/psnames]
+	(src/psnames)
+	psnames.c
+
+	[src/raster]
+	(src/raster)
+	raster.c
+
+	[src/sfnt]
+	(src/sfnt)
+	sfnt.c
+
+	[src/smooth]
+	(src/smooth)
+	smooth.c
+
+	[src/truetype]
+	(src/truetype)
+	truetype.c
+}

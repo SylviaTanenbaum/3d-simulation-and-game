@@ -1,0 +1,10 @@
+// PX2GameManager.pkg
+
+	class GameManager : public Singleton<GameManager>
+	{
+		// Converts
+		Movable *CT_Movable (Object *obj);
+		Node *CT_Node (Object *obj);
+		UIFrame *CT_UIFrame (Object *obj);
+		UIPicBox *CT_UIPicBox (Object *obj);
+	};

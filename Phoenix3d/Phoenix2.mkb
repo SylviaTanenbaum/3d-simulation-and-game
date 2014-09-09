@@ -1,0 +1,82 @@
+
+define __MARMALADE__
+define FT2_BUILD_LIBRARY
+define GOOGLE_PROTOBUF_NO_THREAD_SAFETY
+
+assets
+{
+	(../BinDev/DataIOS)
+}
+
+options
+{
+	s3e-data-dir='../BinDev/DataIOS'
+}
+
+deployments
+{
+	caption="西游迷阵"
+	long-caption="西游迷阵0.1.0"
+	version=0.1.0
+
+	icon=icons
+	splashscreen=splashscreen
+	splashscreen-use-all=1
+
+	iphone-appid='com.linkjoy.mbmz'
+	iphone-bundle-localisations='en,zh'
+	iphone-enable-4inch-retina=1
+	iphone-region='zh_CN'
+}
+
+includepaths
+{
+	PX2Core
+	PX2Mathematics
+	PX2Graphics
+	PX2Unity
+	PX2EventSystem
+	PX2Input
+	PX2Unity/FreeType/include
+	PX2Unity/Lua
+	PX2Unity/DevIL
+	PX2Unity/DevIL/PNG
+	PX2Unity/ToLua
+	PX2Unity/TinyXML
+	PX2Unity/RapidXML
+	PX2Unity/ZLib
+	PX2Unity/ZLib/minzip
+	PX2SoundSystem
+	PX2Game
+	PX2Game/GridMove
+	PX2Terrains
+	PX2UserInterface
+	PX2AppFrame
+	PX2Effect1
+	PX2Graphics/Renderers/OpenGLES2Renderer
+	PX2Net1
+	Darwin/cs_proto
+	Darwin
+	PX2ToLua
+}
+
+subprojects
+{
+	PX2Core
+	PX2Graphics
+	PX2Mathematics
+	PX2EventSystem
+	PX2Input
+	PX2Net1
+	PX2SoundSystem
+	PX2Unity
+	PX2UserInterface
+	PX2Game
+	PX2Effect1
+	PX2AppFrame
+	PX2Terrains
+	Darwin
+	GamePlay
+
+	derbh
+}
