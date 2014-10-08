@@ -264,12 +264,12 @@ void Character::Update (double appSeconds, double elapsedSeconds)
 	if (mLastAnimObj) lastAnim = DynamicCast<Animation3DSkeleton>(mLastAnimObj->TheAnim);
 	Animation3DSkeleton *curAnim = DynamicCast<Animation3DSkeleton>(mCurAnim);
 
-	std::map<FString, KeyframeController*> *lastAnimKFCMap = 0;
+	std::map<FString, KeyframeControllerPtr> *lastAnimKFCMap = 0;
 	if (lastAnim)
 	{
 		lastAnimKFCMap = &(lastAnim->GetKeyframeCtrlMap());
 	}
-	std::map<FString, KeyframeController*> *curAnimKFCMap = 0;
+	std::map<FString, KeyframeControllerPtr> *curAnimKFCMap = 0;
 	if (curAnim)
 	{
 		curAnimKFCMap = &(curAnim->GetKeyframeCtrlMap());
@@ -281,29 +281,41 @@ void Character::Update (double appSeconds, double elapsedSeconds)
 		FString name = it->first;
 		BlendTransformController *ctrl = it->second;
 
+		KeyframeController *ctrl0 = 0;
+		KeyframeController *ctrl1 = 0;
+
 		if (lastAnimKFCMap && curAnimKFCMap)
 		{
-			std::map<FString, KeyframeController*>::iterator itCtrl0 = (*lastAnimKFCMap).find(name);
-			std::map<FString, KeyframeController*>::iterator itCtrl1 = (*curAnimKFCMap).find(name);
+			std::map<FString, KeyframeControllerPtr>::iterator itCtrl0 = (*lastAnimKFCMap).find(name);
+			std::map<FString, KeyframeControllerPtr>::iterator itCtrl1 = (*curAnimKFCMap).find(name);
 
-			if (itCtrl0!=(*lastAnimKFCMap).end() && itCtrl1!=(*curAnimKFCMap).end())
+			if (itCtrl0!=(*lastAnimKFCMap).end())
 			{
-				ctrl->SetController01((*lastAnimKFCMap)[name], (*curAnimKFCMap)[name]);
-				ctrl->SetWeight(weight);
+				ctrl0 = itCtrl0->second;
 			}
+
+			if (itCtrl1!=(*curAnimKFCMap).end())
+			{
+				ctrl1 = itCtrl1->second;
+			}
+
+			ctrl->SetController01(ctrl0, ctrl1);
+			ctrl->SetWeight(weight);
 		}
 		else if (curAnimKFCMap)
 		{
-			std::map<FString, KeyframeController*>::iterator itCtrl1 = (*curAnimKFCMap).find(name);
+			std::map<FString, KeyframeControllerPtr>::iterator itCtrl1 = (*curAnimKFCMap).find(name);
 
-			if (itCtrl1 != (*curAnimKFCMap).end())
+			if (itCtrl1!=(*curAnimKFCMap).end())
 			{
-				ctrl->SetController0(0);
-				ctrl->SetController1((*curAnimKFCMap)[name]);
-				ctrl->SetWeight(1.0f);
+				ctrl1 = itCtrl1->second;
 			}
+
+			ctrl->SetController0(0);
+			ctrl->SetController1(ctrl1);
+			ctrl->SetWeight(1.0f);
 		}
-		if (!lastAnimKFCMap && !curAnim)
+		if (!lastAnimKFCMap && !curAnimKFCMap)
 		{
 			ctrl->SetController01(0, 0);
 		}

@@ -29,8 +29,10 @@
 		bool RemoveActor (Actor *actor);
 		bool IsActorIn (Actor *actor);
 		int GetNumActors ();
+		Actor *GetActor (const std::string &name) const;
 		Actor *GetActor (int i);
 		Actor *GetActor (PX2::Movable *object);
+		Actor *GetActorByID (int id);
 
 		void ShowHelpMovables (bool show);
 	};

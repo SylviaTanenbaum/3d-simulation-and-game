@@ -49,7 +49,7 @@ void Animation3DSkeleton::SetFrequency (float frequency)
 {
 	Animation::SetFrequency(frequency);
 
-	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	std::map<FString, KeyframeControllerPtr>::iterator it = mKeyframeCtrlMap.begin();
 	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
 		KeyframeController *kfc = it->second;
@@ -100,7 +100,7 @@ void Animation3DSkeleton::SetPlayOnce (bool once)
 {
 	Animation::SetPlayOnce(once);
 
-	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	std::map<FString, KeyframeControllerPtr>::iterator it = mKeyframeCtrlMap.begin();
 	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
 		KeyframeController *kfc = it->second;
@@ -132,7 +132,7 @@ void Animation3DSkeleton::OnPlay (Character *character)
 		SetPlayOnce(IsPlayOnce());
 	}
 
-	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	std::map<FString, KeyframeControllerPtr>::iterator it = mKeyframeCtrlMap.begin();
 	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
 		KeyframeController *kfc = it->second;
@@ -150,18 +150,23 @@ void Animation3DSkeleton::CollectKFC (Movable *mov,	const std::string &animTagNa
 	
 	std::string nodeName = mov->GetName();
 
+	if (!animTagName.empty())
+		nodeName = nodeName.substr(animTagName.length(), nodeName.length()-animTagName.length());
+	nodeName = modelTagName + nodeName;
+
 	int numContrls = mov->GetNumControllers();
 	if (1 == numContrls)
 	{
 		KeyframeController *kfc = DynamicCast<KeyframeController>(mov->GetController(0));
 		if (kfc)
 		{
-			if (!animTagName.empty())
-				nodeName = nodeName.substr(animTagName.length(), nodeName.length()-animTagName.length());
-			nodeName = modelTagName + nodeName;
-
 			mKeyframeCtrlMap[FString(nodeName.c_str())] = kfc;
 		}
+	}
+	else
+	{
+		KeyframeController *kfc = new0 KeyframeController(0, 0, 0, 0, mov->LocalTransform);
+		mKeyframeCtrlMap[FString(nodeName.c_str())] = kfc;
 	}
 
 	Node *node = DynamicCast<Node>(mov);
@@ -189,7 +194,7 @@ void Animation3DSkeleton::SetCharacter (Character *character)
 	Movable *animMov = character->GetModelAnimMovable();
 	std::map<FString, BlendTransformController*> &charaBTCMap = character->GetBTCMap();
 
-	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	std::map<FString, KeyframeControllerPtr>::iterator it = mKeyframeCtrlMap.begin();
 	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
 		std::map<FString, BlendTransformController*>::iterator itBTC = charaBTCMap.find(it->first);

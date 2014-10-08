@@ -15,7 +15,7 @@ inline Node *Animation3DSkeleton::GetAnimNode ()
 	return mAnimNode;
 }
 //----------------------------------------------------------------------------
-inline std::map<FString, KeyframeController*> &Animation3DSkeleton::GetKeyframeCtrlMap ()
+inline std::map<FString, KeyframeControllerPtr> &Animation3DSkeleton::GetKeyframeCtrlMap ()
 {
 	return mKeyframeCtrlMap;
 }

@@ -1,6 +1,6 @@
 /*
 ** Lua binding: PX2
-** Generated automatically by tolua++-1.0.92 on 10/08/14 19:02:06.
+** Generated automatically by tolua++-1.0.92 on 10/08/14 20:28:25.
 */
 
 #ifndef __cplusplus
@@ -40212,13 +40212,46 @@ static int tolua_PX2_Scene_GetActor00(lua_State* tolua_S)
 #ifndef TOLUA_RELEASE
  tolua_Error tolua_err;
  if (
+     !tolua_isusertype(tolua_S,1,"const Scene",0,&tolua_err) ||
+     !tolua_iscppstring(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  const Scene* self = (const Scene*)  tolua_tousertype(tolua_S,1,0);
+  const std::string name = ((const std::string)  tolua_tocppstring(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetActor'", NULL);
+#endif
+  {
+   Actor* tolua_ret = (Actor*)  self->GetActor(name);
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"Actor");
+   tolua_pushcppstring(tolua_S,(const char*)name);
+  }
+ }
+ return 2;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetActor'.",&tolua_err);
+ return 0;
+#endif
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetActor of class  Scene */
+#ifndef TOLUA_DISABLE_tolua_PX2_Scene_GetActor01
+static int tolua_PX2_Scene_GetActor01(lua_State* tolua_S)
+{
+ tolua_Error tolua_err;
+ if (
      !tolua_isusertype(tolua_S,1,"Scene",0,&tolua_err) ||
      !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
      !tolua_isnoobj(tolua_S,3,&tolua_err)
  )
   goto tolua_lerror;
  else
-#endif
  {
   Scene* self = (Scene*)  tolua_tousertype(tolua_S,1,0);
   int i = ((int)  tolua_tonumber(tolua_S,2,0));
@@ -40231,17 +40264,14 @@ static int tolua_PX2_Scene_GetActor00(lua_State* tolua_S)
   }
  }
  return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'GetActor'.",&tolua_err);
- return 0;
-#endif
+tolua_lerror:
+ return tolua_PX2_Scene_GetActor00(tolua_S);
 }
 #endif //#ifndef TOLUA_DISABLE
 
 /* method: GetActor of class  Scene */
-#ifndef TOLUA_DISABLE_tolua_PX2_Scene_GetActor01
-static int tolua_PX2_Scene_GetActor01(lua_State* tolua_S)
+#ifndef TOLUA_DISABLE_tolua_PX2_Scene_GetActor02
+static int tolua_PX2_Scene_GetActor02(lua_State* tolua_S)
 {
  tolua_Error tolua_err;
  if (
@@ -40264,7 +40294,41 @@ static int tolua_PX2_Scene_GetActor01(lua_State* tolua_S)
  }
  return 1;
 tolua_lerror:
- return tolua_PX2_Scene_GetActor00(tolua_S);
+ return tolua_PX2_Scene_GetActor01(tolua_S);
+}
+#endif //#ifndef TOLUA_DISABLE
+
+/* method: GetActorByID of class  Scene */
+#ifndef TOLUA_DISABLE_tolua_PX2_Scene_GetActorByID00
+static int tolua_PX2_Scene_GetActorByID00(lua_State* tolua_S)
+{
+#ifndef TOLUA_RELEASE
+ tolua_Error tolua_err;
+ if (
+     !tolua_isusertype(tolua_S,1,"Scene",0,&tolua_err) ||
+     !tolua_isnumber(tolua_S,2,0,&tolua_err) ||
+     !tolua_isnoobj(tolua_S,3,&tolua_err)
+ )
+  goto tolua_lerror;
+ else
+#endif
+ {
+  Scene* self = (Scene*)  tolua_tousertype(tolua_S,1,0);
+  int id = ((int)  tolua_tonumber(tolua_S,2,0));
+#ifndef TOLUA_RELEASE
+  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetActorByID'", NULL);
+#endif
+  {
+   Actor* tolua_ret = (Actor*)  self->GetActorByID(id);
+    tolua_pushusertype(tolua_S,(void*)tolua_ret,"Actor");
+  }
+ }
+ return 1;
+#ifndef TOLUA_RELEASE
+ tolua_lerror:
+ tolua_error(tolua_S,"#ferror in function 'GetActorByID'.",&tolua_err);
+ return 0;
+#endif
 }
 #endif //#ifndef TOLUA_DISABLE
 
@@ -42692,6 +42756,8 @@ TOLUA_API int tolua_PX2_open (lua_State* tolua_S)
    tolua_function(tolua_S,"GetNumActors",tolua_PX2_Scene_GetNumActors00);
    tolua_function(tolua_S,"GetActor",tolua_PX2_Scene_GetActor00);
    tolua_function(tolua_S,"GetActor",tolua_PX2_Scene_GetActor01);
+   tolua_function(tolua_S,"GetActor",tolua_PX2_Scene_GetActor02);
+   tolua_function(tolua_S,"GetActorByID",tolua_PX2_Scene_GetActorByID00);
    tolua_function(tolua_S,"ShowHelpMovables",tolua_PX2_Scene_ShowHelpMovables00);
   tolua_endmodule(tolua_S);
   #ifdef __cplusplus

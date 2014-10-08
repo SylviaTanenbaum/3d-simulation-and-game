@@ -139,7 +139,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\PX2SDK\Library\$(PlatformToolset)\$(Platform)\$(Configuration);..\ThirdPartiesLibs\Microsoft DirectX SDK %28June 2010%29\Lib\x86;..\ThirdPartiesLibs\FMOD\api\lib;..\Darwin\_OutPut</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\PX2SDK\Library\$(PlatformToolset)\$(Platform)\$(Configuration);..\ThirdPartiesLibs\Microsoft DirectX SDK %28June 2010%29\Lib\x86;..\ThirdPartiesLibs\pthread\lib\x86;..\ThirdPartiesLibs\FMOD\api\lib;..\TheGame\_OutPut</AdditionalLibraryDirectories>
       <AdditionalDependencies>PX2Core.lib;PX2Mathematics.lib;PX2GraphicsDx9.lib;PX2Terrains.lib;PX2EventSystem.lib;PX2UserInterface.lib;PX2Effect1.lib;PX2Input.lib;PX2Unity.lib;PX2SoundSystem.lib;PX2Game.lib;PX2Net1.lib;PX2AppFrameDx9.lib;d3d9.lib;d3dx9.lib;dxerr.lib;xinput.lib;dinput8.lib;dxguid.lib;ws2_32.lib;fmodex_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>

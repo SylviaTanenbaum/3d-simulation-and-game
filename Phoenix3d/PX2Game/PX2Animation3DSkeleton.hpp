@@ -40,7 +40,7 @@ namespace PX2
 		virtual void OnPlay (Character *character);
 
 		Node *GetAnimNode (); 
-		std::map<FString, KeyframeController*> &GetKeyframeCtrlMap ();
+		std::map<FString, KeyframeControllerPtr> &GetKeyframeCtrlMap ();
 
 public_internal:
 		virtual void SetCharacter (Character *character);
@@ -50,7 +50,7 @@ public_internal:
 
 		std::string mTagName;
 		NodePtr mAnimNode;
-		std::map<FString, KeyframeController*> mKeyframeCtrlMap;
+		std::map<FString, KeyframeControllerPtr> mKeyframeCtrlMap;
 	};
 	
 	PX2_REGISTER_STREAM(Animation3DSkeleton);
