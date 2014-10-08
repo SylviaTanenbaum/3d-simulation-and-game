@@ -1,6 +1,6 @@
 /*
 ** Lua binding: PX2
-** Generated automatically by tolua++-1.0.92 on 09/09/14 14:01:11.
+** Generated automatically by tolua++-1.0.92 on 10/08/14 19:02:06.
 */
 
 #ifndef __cplusplus
@@ -464,16 +464,15 @@ static int tolua_collect_Texture__Format (lua_State* tolua_S)
 /* function to register type */
 static void tolua_reg_types (lua_State* tolua_S)
 {
- tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"ShaderParameters");
  tolua_usertype(tolua_S,"OffsetProperty");
  tolua_usertype(tolua_S,"std::vector<MultiTouchState>");
+ tolua_usertype(tolua_S,"SoundManager");
  tolua_usertype(tolua_S,"AmbientRegionActor");
- tolua_usertype(tolua_S,"Light");
  tolua_usertype(tolua_S,"TexPackElement");
- tolua_usertype(tolua_S,"Scene3D");
+ tolua_usertype(tolua_S,"Light");
  tolua_usertype(tolua_S,"Controlledable");
- tolua_usertype(tolua_S,"SkillStep");
+ tolua_usertype(tolua_S,"Scene3D");
  tolua_usertype(tolua_S,"ResHandle");
  tolua_usertype(tolua_S,"UIFrame");
  tolua_usertype(tolua_S,"GroupBuf");
@@ -482,17 +481,17 @@ static void tolua_reg_types (lua_State* tolua_S)
  tolua_usertype(tolua_S,"Triangles");
  tolua_usertype(tolua_S,"TriMesh");
  tolua_usertype(tolua_S,"Float4");
- tolua_usertype(tolua_S,"PX2::Node");
+ tolua_usertype(tolua_S,"SkillStep");
  tolua_usertype(tolua_S,"LanguageManager");
+ tolua_usertype(tolua_S,"PX2::Node");
  tolua_usertype(tolua_S,"std::vector<Pointer0<UIPicBox> >");
  tolua_usertype(tolua_S,"XMLNode");
  tolua_usertype(tolua_S,"Character2DFrames8");
- tolua_usertype(tolua_S,"StateMachine<Character>");
  tolua_usertype(tolua_S,"ScriptManager");
  tolua_usertype(tolua_S,"Texture2D");
- tolua_usertype(tolua_S,"std::list<Skill*>");
+ tolua_usertype(tolua_S,"StateMachine<Character>");
  tolua_usertype(tolua_S,"UIButtonBase");
- tolua_usertype(tolua_S,"std::list<SkinControllerPtr>");
+ tolua_usertype(tolua_S,"std::list<Skill*>");
  tolua_usertype(tolua_S,"Vector2f");
  tolua_usertype(tolua_S,"APoint");
  tolua_usertype(tolua_S,"AffectObject");
@@ -36370,38 +36369,6 @@ static int tolua_PX2_Character_GetModelTagName00(lua_State* tolua_S)
 }
 #endif //#ifndef TOLUA_DISABLE
 
-/* method: GetSkinCtrls of class  Character */
-#ifndef TOLUA_DISABLE_tolua_PX2_Character_GetSkinCtrls00
-static int tolua_PX2_Character_GetSkinCtrls00(lua_State* tolua_S)
-{
-#ifndef TOLUA_RELEASE
- tolua_Error tolua_err;
- if (
-     !tolua_isusertype(tolua_S,1,"Character",0,&tolua_err) ||
-     !tolua_isnoobj(tolua_S,2,&tolua_err)
- )
-  goto tolua_lerror;
- else
-#endif
- {
-  Character* self = (Character*)  tolua_tousertype(tolua_S,1,0);
-#ifndef TOLUA_RELEASE
-  if (!self) tolua_error(tolua_S,"invalid 'self' in function 'GetSkinCtrls'", NULL);
-#endif
-  {
-   std::list<SkinControllerPtr>& tolua_ret = (std::list<SkinControllerPtr>&)  self->GetSkinCtrls();
-    tolua_pushusertype(tolua_S,(void*)&tolua_ret,"std::list<SkinControllerPtr>");
-  }
- }
- return 1;
-#ifndef TOLUA_RELEASE
- tolua_lerror:
- tolua_error(tolua_S,"#ferror in function 'GetSkinCtrls'.",&tolua_err);
- return 0;
-#endif
-}
-#endif //#ifndef TOLUA_DISABLE
-
 /* method: AddItem of class  Character */
 #ifndef TOLUA_DISABLE_tolua_PX2_Character_AddItem00
 static int tolua_PX2_Character_AddItem00(lua_State* tolua_S)
@@ -42591,7 +42558,6 @@ TOLUA_API int tolua_PX2_open (lua_State* tolua_S)
    tolua_function(tolua_S,"IsHasAnimPlaying",tolua_PX2_Character_IsHasAnimPlaying00);
    tolua_function(tolua_S,"SetModelTagName",tolua_PX2_Character_SetModelTagName00);
    tolua_function(tolua_S,"GetModelTagName",tolua_PX2_Character_GetModelTagName00);
-   tolua_function(tolua_S,"GetSkinCtrls",tolua_PX2_Character_GetSkinCtrls00);
    tolua_function(tolua_S,"AddItem",tolua_PX2_Character_AddItem00);
    tolua_function(tolua_S,"HasItem",tolua_PX2_Character_HasItem00);
    tolua_function(tolua_S,"GetNumItems",tolua_PX2_Character_GetNumItems00);

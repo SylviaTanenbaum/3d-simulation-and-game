@@ -7,9 +7,10 @@
 #include "PX2EffectModel.hpp"
 #include "PX2EffectModelController.hpp"
 #include "PX2StandardMesh.hpp"
+#include "PX2ResourceManager.hpp"
 using namespace PX2;
 
-PX2_IMPLEMENT_RTTI(PX2, Effectable, EffectModel);
+PX2_IMPLEMENT_RTTI_V(PX2, Effectable, EffectModel, 1);
 PX2_IMPLEMENT_STREAM(EffectModel);
 PX2_IMPLEMENT_FACTORY(EffectModel);
 PX2_IMPLEMENT_DEFAULT_NAMES(Effectable, EffectModel);
@@ -80,6 +81,13 @@ void EffectModel::SetRadiusSample (int radiusSample)
 void EffectModel::SetHeightAlphaType (HeightAlphaType type)
 {
 	mHeightAlphaType = type;
+}
+//----------------------------------------------------------------------------
+void EffectModel::SetModelFilename (const std::string &filename)
+{
+	mModelFilename = filename;
+
+	mIsNeedReGenMesh = true;
 }
 //----------------------------------------------------------------------------
 void EffectModel::GenBuffers ()
@@ -169,16 +177,24 @@ void EffectModel::GenMesh ()
 	{
 		mesh = stdMesh.Cylinder(mZSample, mRadiusSample, GetEmitSizeX(), GetEmitSizeZ(), true);
 	}
-
-	SetVertexBuffer(mesh->GetVertexBuffer());
-	SetIndexBuffer(mesh->GetIndexBuffer());
-
-	mInitUVs.clear();
-	VertexBufferAccessor vba(GetVertexFormat(), GetVertexBuffer());
-	for (int i=0; i<vba.GetNumVertices(); i++)
+	else if (MT_MODEL == mModelType)
 	{
-		Float2 uv = vba.TCoord<Float2>(0, i);
-		mInitUVs.push_back(uv);
+		if (!mModelFilename.empty())
+			mesh = DynamicCast<TriMesh>(PX2_RM.BlockLoadCopy(mModelFilename));
+	}
+
+	if (mesh)
+	{
+		SetVertexBuffer(mesh->GetVertexBuffer());
+		SetIndexBuffer(mesh->GetIndexBuffer());
+
+		mInitUVs.clear();
+		VertexBufferAccessor vba(GetVertexFormat(), GetVertexBuffer());
+		for (int i=0; i<vba.GetNumVertices(); i++)
+		{
+			Float2 uv = vba.TCoord<Float2>(0, i);
+			mInitUVs.push_back(uv);
+		}
 	}
 }
 //----------------------------------------------------------------------------
@@ -205,10 +221,12 @@ void EffectModel::RegistProperties ()
 	std::vector<std::string> modelTypes;
 	modelTypes.push_back("MT_SPHERE");
 	modelTypes.push_back("MT_CYLINDEROPEN");
+	modelTypes.push_back("MT_MODEL");
 	AddPropertyEnum("ModelType", (int)GetModelType(), modelTypes);
 
 	AddProperty("RadiusSample", PT_INT, GetRadiusSample());
 	AddProperty("ZSample", PT_INT, GetZSample());
+	AddProperty("ModelFilename", PT_STRING, GetModelFilename());
 
 	std::vector<std::string> heightAlphaTypes;
 	heightAlphaTypes.push_back("HAT_NORMAL");
@@ -234,6 +252,10 @@ void EffectModel::OnPropertyChanged (const PropertyObject &obj)
 	else if ("ZSample" == obj.Name)
 	{
 		SetZSample(PX2_ANY_AS(obj.Data, int));
+	}
+	else if ("ModelFilename" == obj.Name)
+	{
+		SetModelFilename(PX2_ANY_AS(obj.Data, std::string));
 	}
 	else if ("HeightAlphaType" == obj.Name)
 	{
@@ -267,6 +289,12 @@ void EffectModel::Load (InStream& source)
 	source.Read(mRadiusSample);
 	source.Read(mZSample);
 	source.ReadEnum(mHeightAlphaType);
+
+	int readedVersion = GetReadedVersion();
+	if (1 <= readedVersion)
+	{
+		source.ReadString(mModelFilename);
+	}
 
 	PX2_END_DEBUG_STREAM_LOAD(EffectModel, source);
 }
@@ -303,6 +331,8 @@ void EffectModel::Save (OutStream& target) const
 	target.Write(mZSample);
 	target.WriteEnum(mHeightAlphaType);
 
+	target.WriteString(mModelFilename);
+
 	PX2_END_DEBUG_STREAM_SAVE(EffectModel, target);
 }
 //----------------------------------------------------------------------------
@@ -315,6 +345,19 @@ int EffectModel::GetStreamingSize (Stream &stream) const
 	size += sizeof(mRadiusSample);
 	size += sizeof(mZSample);
 	size += PX2_ENUMSIZE(mHeightAlphaType);
+
+	if (stream.IsIn())
+	{
+		int readedVersion = GetReadedVersion();
+		if (1 <= readedVersion)
+		{
+			size += PX2_STRINGSIZE(mModelFilename);
+		}
+	}
+	else
+	{
+		size += PX2_STRINGSIZE(mModelFilename);
+	}
 
 	return size;
 }

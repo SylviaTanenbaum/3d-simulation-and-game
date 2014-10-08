@@ -9,11 +9,23 @@ using namespace PX2;
 
 //----------------------------------------------------------------------------
 InputEventHandler::InputEventHandler ()
+	:
+mPriority(0)
 {
 }
 //----------------------------------------------------------------------------
 InputEventHandler::~InputEventHandler ()
 {
+}
+//----------------------------------------------------------------------------
+void InputEventHandler::SetPriority (int priority)
+{
+	mPriority = priority;
+}
+//----------------------------------------------------------------------------
+int InputEventHandler::GetPriority () const
+{
+	return mPriority;
 }
 //----------------------------------------------------------------------------
 void InputEventHandler::AddAcceptRange (const Rectf &ar)

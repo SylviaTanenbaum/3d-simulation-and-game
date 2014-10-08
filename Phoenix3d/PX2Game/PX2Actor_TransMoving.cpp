@@ -6,8 +6,11 @@
 
 #include "PX2Actor.hpp"
 #include "PX2Scene.hpp"
+#include "PX2PropModify.hpp"
 using namespace PX2;
 
+//----------------------------------------------------------------------------
+PX2_IMPLEMENT_PM_F(Actor, MaxSpeed);
 //----------------------------------------------------------------------------
 void Actor::SetScale (const APoint &scale)
 {
@@ -76,74 +79,6 @@ void Actor::SetPosition (const APoint &position)
 	}
 }
 //----------------------------------------------------------------------------
-void Actor::SetMaxSpeed (float val) 
-{ 
-	mMaxSpeed = val; 
-
-	CalMMaxSpeed (); 
-} 
-//----------------------------------------------------------------------------
-float Actor::GetMaxSpeed () const 
-{ 
-	return mMaxSpeed; 
-} 
-//----------------------------------------------------------------------------
-void Actor::AddMMaxSpeed (const std::string &factorName, float val) 
-{ 
-	mMMapMaxSpeed[factorName] = val; 
-
-	CalMMaxSpeed (); 
-} 
-//----------------------------------------------------------------------------
-float Actor::GetMMaxSpeed (const std::string &factorName) 
-{ 
-	std::map<std::string, float>::iterator it = mMMapMaxSpeed.find(factorName); 
-	if (mMMapMaxSpeed.end() != it) 
-	{ 
-		return it->second; 
-	}
-	else
-	{
-		assertion(false, "%s does not exist.\n", factorName.c_str());
-		PX2_LOG_ERROR("%s does not exist.", factorName.c_str());
-	}
-
-	return 0.0f;
-}
-//----------------------------------------------------------------------------
-void Actor::RemoveMMaxSpeed (const std::string &factorName)
-{
-	std::map<std::string, float>::iterator it = mMMapMaxSpeed.find(factorName);
-	if (it != mMMapMaxSpeed.end())
-	{
-		mMMapMaxSpeed.erase(it);
-	}
-
-	CalMMaxSpeed ();
-}
-//----------------------------------------------------------------------------
-std::map<std::string, float> &Actor::GetMMapMaxSpeed () 
-{
-	return mMMapMaxSpeed;
-}
-//----------------------------------------------------------------------------
-void Actor::CalMMaxSpeed ()
-{
-	mMMaxSpeed = GetMaxSpeed ();
-
-	std::map<std::string, float>::iterator it = mMMapMaxSpeed.begin();
-	for (; it!=mMMapMaxSpeed.end(); it++)
-	{
-		mMMaxSpeed += it->second;
-	}
-
-	OnMaxSpeedModified();
-}
-//----------------------------------------------------------------------------
-void Actor::OnMaxSpeedModified ()
-{
-}
-//----------------------------------------------------------------------------
 float Actor::GetPercentSpeedOverModified ()
 {
 	if (0.0f == mMMaxSpeed)
@@ -152,9 +87,44 @@ float Actor::GetPercentSpeedOverModified ()
 	return mMaxSpeed/mMMaxSpeed;
 }
 //----------------------------------------------------------------------------
-float Actor::GetMMaxSpeed () const
+void Actor::AddStopSpeedTag (const std::string &tag)
 {
-	return mMMaxSpeed;
+	if (IsHasStopSpeedTag(tag))
+		return;
+
+	mStopSpeedTags.push_back(tag);
+}
+//----------------------------------------------------------------------------
+void Actor::RemoveStopSpeedTag (const std::string &tag)
+{
+	std::vector<std::string>::iterator it = mStopSpeedTags.begin();
+	for (; it!=mStopSpeedTags.end();)
+	{
+		if ((*it) == tag)
+		{
+			it = mStopSpeedTags.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+//----------------------------------------------------------------------------
+bool Actor::IsHasStopSpeedTag (const std::string &tag) const
+{
+	for (int i=0; i<(int)mStopSpeedTags.size(); i++)
+	{
+		if (tag == mStopSpeedTags[i])
+			return true;
+	}
+
+	return false;
+}
+//----------------------------------------------------------------------------
+const std::vector<std::string> Actor::GetStopSpeedTags () const
+{
+	return mStopSpeedTags;
 }
 //----------------------------------------------------------------------------
 void Actor::StopSpeed (bool stop)

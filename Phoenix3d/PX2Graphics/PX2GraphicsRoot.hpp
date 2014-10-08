@@ -48,12 +48,20 @@ namespace PX2
 		int GetNumLights ();
 		Light *GetLight (int index);
 
+		void SetFogParam (const Float4 &param);
+		const Float4 &GetFogParam () const;
+
+		void SetFogColor (const Float4 &fogColor);
+		const Float4 &GetFogColor () const;
+
 	private:
 		Rectf mRect;
 		Sizef mSize;
 		PX2::CameraPtr mCamera;
 		std::vector<LightPtr> mAllLights; // 保存放在场景中的所有灯光
 		static std::string PX2Path;
+		Float4 mFogParam;
+		Float4 mFogColor;
 	};
 
 #include "PX2GraphicsRoot.inl"

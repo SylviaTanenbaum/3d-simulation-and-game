@@ -6,6 +6,10 @@
 
 #include "PX2Texture2MulMaterial.hpp"
 #include "PX2PVWMatrixConstant.hpp"
+#include "PX2WMatrixConstant.hpp"
+#include "PX2CameraWorldPositionConstant.hpp"
+#include "PX2FogColorConstant.hpp"
+#include "PX2FogParamConstant.hpp"
 #include "PX2ShaderKeys.hpp"
 using namespace PX2;
 
@@ -18,13 +22,11 @@ PX2_IMPLEMENT_DEFAULT_NAMES(Material, Texture2MulMaterial);
 Texture2MulMaterial::Texture2MulMaterial ()
 {
 	VertexShader* vshader = new0 VertexShader("PX2.Texture2Mul",
-		3, 3, 1, 0, false);
+		2, 3, 4, 0, false);
 	vshader->SetInput(0, "modelPosition", Shader::VT_FLOAT3,
 		Shader::VS_POSITION);
 	vshader->SetInput(1, "modelTCoord0", Shader::VT_FLOAT2,
 		Shader::VS_TEXCOORD0);
-	vshader->SetInput(2, "modelTCoord1", Shader::VT_FLOAT2,
-		Shader::VS_TEXCOORD1);
 	vshader->SetOutput(0, "clipPosition", Shader::VT_FLOAT4,
 		Shader::VS_POSITION);
 	vshader->SetOutput(1, "vertexTCoord0", Shader::VT_FLOAT2,
@@ -32,20 +34,25 @@ Texture2MulMaterial::Texture2MulMaterial ()
 	vshader->SetOutput(2, "vertexTCoord1", Shader::VT_FLOAT2,
 		Shader::VS_TEXCOORD1);
 	vshader->SetConstant(0, "PVWMatrix", 4);
+	vshader->SetConstant(1, "WMatrix", 4);
+	vshader->SetConstant(2, "CameraWorldPosition", 1);
+	vshader->SetConstant(3, "FogParam", 1);
 	vshader->SetBaseRegisters(msVRegisters);
 	vshader->SetPrograms(msVPrograms);
 
 	PixelShader* pshader = new0 PixelShader("PX2.Texture2Mul",
-		2, 1, 0, 2, false);
+		2, 1, 1, 2, false);
 	pshader->SetInput(0, "vertexTCoord0", Shader::VT_FLOAT2,
 		Shader::VS_TEXCOORD0);
 	pshader->SetInput(1, "vertexTCoord1", Shader::VT_FLOAT2,
 		Shader::VS_TEXCOORD1);
 	pshader->SetOutput(0, "pixelColor", Shader::VT_FLOAT4,
 		Shader::VS_COLOR0);
+	pshader->SetConstant(0, "FogColor", 1);
 	pshader->SetSampler(0, "Sampler0", Shader::ST_2D);
 	pshader->SetSampler(1, "Sampler1", Shader::ST_2D);
 	pshader->SetTextureUnits(msPTextureUnits);
+	pshader->SetBaseRegisters(msPRegisters);
 	pshader->SetPrograms(msPPrograms);
 
 	MaterialPass* pass = new0 MaterialPass();
@@ -80,28 +87,22 @@ MaterialInstance* Texture2MulMaterial::CreateInstance (Texture2D* texture0,
 {
 	MaterialInstance* instance = new0 MaterialInstance(this, 0);
 	instance->SetVertexConstant(0, 0, new0 PVWMatrixConstant());
+	instance->SetVertexConstant(0, 1, new0 WMatrixConstant());
+	instance->SetVertexConstant(0, 2, new0 CameraWorldPositionConstant());
+	instance->SetVertexConstant(0, 3, new0 FogParamConstant());
 	instance->SetPixelTexture(0, 0, texture0);
 	instance->SetPixelTexture(0, 1, texture1);
+	instance->SetPixelConstant(0, 0, new0 FogColorConstant());
+
+	PixelShader* pshader = GetPixelShader();
+	pshader->SetFilter(0, Shader::SF_LINEAR);
+	pshader->SetFilter(1, Shader::SF_LINEAR);
+	pshader->SetCoordinate(0, 0, Shader::SC_CLAMP);
+	pshader->SetCoordinate(0, 1, Shader::SC_CLAMP);
+	pshader->SetCoordinate(1, 0, Shader::SC_CLAMP);
+	pshader->SetCoordinate(1, 1, Shader::SC_CLAMP);
 
 	return instance;
-}
-//----------------------------------------------------------------------------
-MaterialInstance* Texture2MulMaterial::CreateUniqueInstance (
-	Texture2D* texture0, Shader::SamplerFilter filter0,
-	Shader::SamplerCoordinate coordinate00,
-	Shader::SamplerCoordinate coordinate01, Texture2D* texture1,
-	Shader::SamplerFilter filter1, Shader::SamplerCoordinate coordinate10,
-	Shader::SamplerCoordinate coordinate11)
-{
-	Texture2MulMaterial* effect = new0 Texture2MulMaterial();
-	PixelShader* pshader = effect->GetPixelShader();
-	pshader->SetFilter(0, filter0);
-	pshader->SetCoordinate(0, 0, coordinate00);
-	pshader->SetCoordinate(0, 1, coordinate01);
-	pshader->SetFilter(1, filter1);
-	pshader->SetCoordinate(1, 0, coordinate10);
-	pshader->SetCoordinate(1, 1, coordinate11);
-	return effect->CreateInstance(texture0, texture1);
 }
 //----------------------------------------------------------------------------
 
@@ -138,6 +139,7 @@ void Texture2MulMaterial::PostLink ()
 	vshader->SetBaseRegisters(msVRegisters);
 	vshader->SetPrograms(msVPrograms);
 	pshader->SetTextureUnits(msPTextureUnits);
+	pshader->SetBaseRegisters(msPRegisters);
 	pshader->SetPrograms(msPPrograms);
 
 	vshader->SetShaderKey(SKT_TEXTURE2DMUL);
@@ -167,9 +169,9 @@ int Texture2MulMaterial::GetStreamingSize (Stream &stream) const
 //----------------------------------------------------------------------------
 // Profiles.
 //----------------------------------------------------------------------------
-int Texture2MulMaterial::msDx9VRegisters[1] = { 0 };
-int Texture2MulMaterial::msOglVRegisters[1] = { 1 };
-int Texture2MulMaterial::msOpenGLES2VRegisters[1] = { 0 };
+int Texture2MulMaterial::msDx9VRegisters[4] = { 0, 4, 8, 9};
+int Texture2MulMaterial::msOglVRegisters[4] = { 1, 5, 9, 10 };
+int Texture2MulMaterial::msOpenGLES2VRegisters[4] = { 0, 0, 0, 0};
 int* Texture2MulMaterial::msVRegisters[Shader::MAX_PROFILES] =
 {
 	0,
@@ -202,31 +204,58 @@ std::string Texture2MulMaterial::msVPrograms[Shader::MAX_PROFILES] =
 
 	// VS_2_0
 	"vs_2_0\n"
-	"def c4, 1.00000000, 0, 0, 0\n"
+	"def c10, 1.00000000, 0.00000000, 0, 0\n"
 	"dcl_position0 v0\n"
 	"dcl_texcoord0 v1\n"
-	"mov r0.w, c4.x\n"
-	"mov r0.xyz, v0\n"
-	"dp4 oPos.w, r0, c3\n"
-	"dp4 oPos.z, r0, c2\n"
-	"dp4 oPos.y, r0, c1\n"
-	"dp4 oPos.x, r0, c0\n"
-	"mov oT0.xy, v1\n",
+	"mov r1.w, c10.x\n"
+	"mov r1.xyz, v0\n"
+	"dp4 r0.z, r1, c6\n"
+	"dp4 r0.x, r1, c4\n"
+	"dp4 r0.y, r1, c5\n"
+	"add r0.xyz, r0, -c8\n"
+	"dp3 r0.x, r0, r0\n"
+	"rsq r0.x, r0.x\n"
+	"add r0.y, c9, -c9.x\n"
+	"rcp r0.x, r0.x\n"
+	"rcp r0.y, r0.y\n"
+	"add r0.x, -r0, c9.y\n"
+	"mul r0.x, r0, r0.y\n"
+	"min r0.x, r0, c10\n"
+	"max oT1.x, r0, c10.y\n"
+	"dp4 oPos.w, r1, c3\n"
+	"dp4 oPos.z, r1, c2\n"
+	"dp4 oPos.y, r1, c1\n"
+	"dp4 oPos.x, r1, c0\n"
+	"mov oT0.xy, v1\n"
+	"mov oT1.y, c9.z\n",
 
 	// VS_3_0
 	"vs_3_0\n"
 	"dcl_position o0\n"
 	"dcl_texcoord0 o1\n"
-	"def c4, 1.00000000, 0, 0, 0\n"
+	"dcl_texcoord1 o2\n"
+	"def c10, 1.00000000, 0, 0, 0\n"
 	"dcl_position0 v0\n"
 	"dcl_texcoord0 v1\n"
-	"mov r0.w, c4.x\n"
-	"mov r0.xyz, v0\n"
-	"dp4 o0.w, r0, c3\n"
-	"dp4 o0.z, r0, c2\n"
-	"dp4 o0.y, r0, c1\n"
-	"dp4 o0.x, r0, c0\n"
-	"mov o1.xy, v1\n",
+	"mov r1.w, c10.x\n"
+	"mov r1.xyz, v0\n"
+	"dp4 r0.z, r1, c6\n"
+	"dp4 r0.x, r1, c4\n"
+	"dp4 r0.y, r1, c5\n"
+	"add r0.xyz, r0, -c8\n"
+	"dp3 r0.x, r0, r0\n"
+	"rsq r0.x, r0.x\n"
+	"add r0.y, c9, -c9.x\n"
+	"rcp r0.x, r0.x\n"
+	"rcp r0.y, r0.y\n"
+	"add r0.x, -r0, c9.y\n"
+	"mul_sat o2.x, r0, r0.y\n"
+	"dp4 o0.w, r1, c3\n"
+	"dp4 o0.z, r1, c2\n"
+	"dp4 o0.y, r1, c1\n"
+	"dp4 o0.x, r1, c0\n"
+	"mov o1.xy, v1\n"
+	"mov o2.y, c9.z\n",
 
 	// ARBVP1
 	"!!ARBvp1.0\n"
@@ -245,6 +274,9 @@ std::string Texture2MulMaterial::msVPrograms[Shader::MAX_PROFILES] =
 };
 
 int Texture2MulMaterial::msAllPTextureUnits[2] = { 0, 1 };
+int Texture2MulMaterial::msDx9PRegisters[1]= {0};
+int Texture2MulMaterial::msOglPRegisters[1] = {1};
+int Texture2MulMaterial::msOpenGLES2PRegisters[1] = {0};
 int* Texture2MulMaterial::msPTextureUnits[Shader::MAX_PROFILES] =
 {
 	0,
@@ -253,6 +285,15 @@ int* Texture2MulMaterial::msPTextureUnits[Shader::MAX_PROFILES] =
 	msAllPTextureUnits,
 	msAllPTextureUnits,
 	msAllPTextureUnits
+};
+int* Texture2MulMaterial::msPRegisters[Shader::MAX_PROFILES] =
+{
+	0,
+	msDx9PRegisters,
+	msDx9PRegisters,
+	msDx9PRegisters,
+	msOglPRegisters,
+	msOpenGLES2PRegisters
 };
 
 std::string Texture2MulMaterial::msPPrograms[Shader::MAX_PROFILES] =
@@ -270,26 +311,34 @@ std::string Texture2MulMaterial::msPPrograms[Shader::MAX_PROFILES] =
 	"ps_2_0\n"
 	"dcl_2d s0\n"
 	"dcl_2d s1\n"
-	"def c0, 1.00000000, 0, 0, 0\n"
+	"def c1, 1.00000000, 0, 0, 0\n"
 	"dcl t0.xy\n"
+	"dcl t1.xy\n"
 	"mov r1.x, t0\n"
-	"add r1.y, -t0, c0.x\n"
+	"add r1.y, -t0, c1.x\n"
 	"texld r0, r1, s1\n"
 	"texld r1, r1, s0\n"
-	"mul r0, r1, r0\n"
+	"mad r0.xyz, r1, r0, -c0\n"
+	"mad r0.xyz, t1.x, r0, c0\n"
+	"mov r0.w, r1\n"
+	"mul r0.xyz, r0, t1.y\n"
 	"mov oC0, r0\n",
 
 	// PS_3_0
 	"ps_3_0\n"
 	"dcl_2d s0\n"
 	"dcl_2d s1\n"
-	"def c0, 1.00000000, 0, 0, 0\n"
+	"def c1, 1.00000000, 0, 0, 0\n"
 	"dcl_texcoord0 v0.xy\n"
+	"dcl_texcoord1 v1.xy\n"
 	"mov r0.x, v0\n"
-	"add r0.y, -v0, c0.x\n"
-	"texld r1, r0, s1\n"
+	"add r0.y, -v0, c1.x\n"
+	"texld r1.xyz, r0, s1\n"
 	"texld r0, r0, s0\n"
-	"mul oC0, r0, r1\n",
+	"mad r0.xyz, r0, r1, -c0\n"
+	"mad r0.xyz, v1.x, r0, c0\n"
+	"mul oC0.xyz, r0, v1.y\n"
+	"mov oC0.w, r0\n",
 
 	// ARBFP1
 	"!!ARBfp1.0\n"
@@ -305,7 +354,7 @@ std::string Texture2MulMaterial::msPPrograms[Shader::MAX_PROFILES] =
 	"	mediump vec4 color0 = texture2D(Sampler0, texCoord0);\n"
 	"	mediump vec4 color1 = texture2D(Sampler1, texCoord0);\n"
 	"	gl_FragColor.rgb = color0.rgb*color1.rgb;\n"
-	"	gl_FragColor.a = 1.0;\n"
+	"	gl_FragColor.a = color0.a;\n"
 	"}\n"
 };
 //----------------------------------------------------------------------------

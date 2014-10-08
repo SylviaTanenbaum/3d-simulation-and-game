@@ -31,6 +31,7 @@ mPriority(0),
 mMaxPlayTime(-1.0f),
 mDelayPlayTime(0.0f),
 mIsPlaying(false),
+mPlayedTime(0.0f),
 mIsPlayedDoDetach(false),
 mPlayedCallback(0)
 {

@@ -117,6 +117,7 @@ void SkillActorLink::Update (double appSeconds, double elapsedSeconds)
 
 	SetPosition(fromPos);
 	mLinkBeam->SetEmitStartPos(fromPos);
+	endPos.Z() += 1.5f;
 	mLinkBeam->SetEmitEndPos(endPos);
 }
 //----------------------------------------------------------------------------

@@ -57,7 +57,6 @@ namespace PX2
 		static const Float3 WINBLUE;
 		static const Float3 WINPURPLE;
 		static const Float3 WINORANGE;
-		static const Float3 WINWHITE;
 	};
 
 }

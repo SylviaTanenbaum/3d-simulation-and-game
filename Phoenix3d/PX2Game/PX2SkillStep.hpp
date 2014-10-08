@@ -81,6 +81,8 @@ namespace PX2
 		const std::string GetSelfPosEffectAnchor () const;
 		void SetSelfPosEffectTime (float seconds);
 		float GetSelfPosEffectTime () const;
+		void SetSelfPosEffectDelayTime (float seconeds);
+		float GetSelfPosEffectDelayTime () const;
 
 		// effect1
 		void SetSelfEffect1Filename (const std::string &selfEffectFilename);
@@ -96,6 +98,8 @@ namespace PX2
 		const std::string GetSelfPosEffect1Anchor () const;
 		void SetSelfPosEffect1Time (float seconds);
 		float GetSelfPosEffect1Time () const;
+		void SetSelfPosEffectDelayTime1 (float seconeds);
+		float GetSelfPosEffectDelayTime1 () const;
 
 		// target
 		void SetTargetEffectFilename (const std::string &targetEffectFilename);
@@ -109,6 +113,9 @@ namespace PX2
 		const std::string &GetTargetPosEffectFilename () const;
 		void SetTargetPosEffectTime (float seconds);
 		float GetTargetPosEffectTime () const;
+
+		void SetAnimedTargetPosEffectFilename (const std::string &effectFilename);
+		const std::string &GetAnimedTargetPosEffectFilename () const;
 
 		// script handler
 		void SetScriptHandler_Enter (const std::string &handler);
@@ -154,6 +161,7 @@ public_internal:
 		std::string mSelfPosEffectFilename;
 		std::string mSelfPosEffectAnchor;
 		float mSelfPosEffectTime;
+		float mSelfPosEffectDelayTime;
 
 		// effect1
 		std::string mSelfEffect1Filename;
@@ -163,6 +171,7 @@ public_internal:
 		std::string mSelfPosEffect1Filename;
 		std::string mSelfPosEffect1Anchor;
 		float mSelfPosEffect1Time;
+		float mSelfPosEffectDelayTime1;
 
 		// target
 		std::string mTargetEffectFilename;
@@ -171,6 +180,8 @@ public_internal:
 
 		std::string mTargetPosEffectFilename;
 		float mTargetPosEffectTime;
+
+		std::string mAnimedTargetPosEffectFilename;
 
 		std::string mScriptHandler_Leave;
 		std::string mScriptHandler_Enter;

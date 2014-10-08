@@ -32,7 +32,6 @@ namespace PX2
 		inline int GetNumVertices () const;
 		inline int GetNumBones () const;
 		inline Node** GetBones () const;
-		inline std::string *GetBoneNames () const;
 		inline float** GetWeights () const;
 		inline APoint** GetOffsets () const;
 		inline HMatrix* GetTMMatrixs () const;
@@ -40,26 +39,18 @@ namespace PX2
 
 		virtual bool Update (double applicationTime);
 
-		void UpdateBlender (Node **lastNodes, Node **curNodes, float weight);
-
 	protected:
 		bool mIsUseCPU;
 
 		int mNumVertices;   // nv
 		int mNumBones;      // nb
 		Node** mBones;      // bones[nb]
-		std::string *mBonesName;
 		float** mWeights;   // weight[nv][nb], index b+nb*v
 		APoint** mOffsets;  // offset[nv][nb], index b+nb*v
 		HMatrix *mTMMatrixs;
 
 		APoint *mOriginPoses;
 		HMatrix *mGPUMatrixs;
-
-		bool mIsUseBlend;
-		float mBlendWeight;
-		NodePtr *mBones_Run;
-		NodePtr *mBones_Run_Last;
 	};
 
 	PX2_REGISTER_STREAM(SkinController);

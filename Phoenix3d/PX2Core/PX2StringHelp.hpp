@@ -63,7 +63,7 @@ namespace PX2
 
 		static std::string IntToString (int val);
 		static int StringToInt (const std::string &val);
-		static std::string FloatToString (float val);
+		static std::string FloatToString (float val, int numPoint=1);
 
 		static std::string FormatStr (const std::string &str, const std::vector<std::string> &params);
 		static std::string FormatStr (const std::string &str, int val);

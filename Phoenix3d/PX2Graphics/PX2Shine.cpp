@@ -46,7 +46,7 @@ void Shine::RegistProperties ()
 
 	AddProperty("Emissive", Object::PT_COLOR3FLOAT3, mEmissiveTemp);
 	AddProperty("Ambient_Bake", Object::PT_COLOR3FLOAT3, mAmbientTemp);
-	AddProperty("AmbientAlpha_Bake", Object::PT_COLOR3FLOAT3, mAmbientAlphaTemp);
+	AddProperty("AmbientAlpha_Bake", Object::PT_FLOAT, mAmbientAlphaTemp);
 	AddProperty("Diffuse_Bake", Object::PT_COLOR3FLOAT3, mDiffuseTemp);
 	AddProperty("DiffuseAlpha_Bake", Object::PT_FLOAT, mDiffuseAlphaTemp);
 	AddProperty("Specular_Bake", Object::PT_COLOR3FLOAT3, mSpecularTemp);

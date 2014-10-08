@@ -149,12 +149,14 @@ namespace PX2
 
 		Movable *GetSkinMovable ();
 		Movable *GetModelAnimMovable ();
-		std::list<SkinControllerPtr> &GetSkinCtrls ();
+
+		std::map<FString, BlendTransformController*> &GetBTCMap ();
 
 		static bool IsNodeHasMesh (Node *node);
 
 	protected:
 		void CalSkins ();
+		void ProcessSkin (SkinController *skinCtrl);
 
 		std::vector<AnimationPtr> mAnims;
 		AnimationPtr mStandbyAnim;
@@ -162,8 +164,19 @@ namespace PX2
 
 		MovablePtr mSkinMovable;
 		MovablePtr mModelAnimMovable;
-		std::list<SkinControllerPtr> mSkinCtrls;
-		std::map<SkinController*, std::vector<std::string> > mAnimNodeNames;
+
+		std::map<FString, BlendTransformController*> mBTCMap;
+
+		class AnimNodeObj
+		{
+		public:
+			AnimNodeObj ();
+			~AnimNodeObj ();
+
+			Node *TheNode;
+			BlendTransformController *TheBlendCtrl;
+		};
+		std::map<SkinController*, std::vector<AnimNodeObj> > mSkinAnimObjs;
 
 		AnimationObjectPtr mLastAnimObj;
 		AnimationPtr mCurAnim;

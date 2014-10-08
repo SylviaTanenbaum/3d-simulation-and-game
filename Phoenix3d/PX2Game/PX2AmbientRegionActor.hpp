@@ -23,6 +23,9 @@ namespace PX2
 	public:
 		AmbientRegionActor ();
 		virtual ~AmbientRegionActor ();
+
+		void SetGISkyLightColor (const Float3 &color);
+		const Float3 &GetGISkyLightColor () const;
 		
 		void SetAmbientColor (const Float3 &color);
 		const Float3 &GetAmbientColor () const;
@@ -31,10 +34,20 @@ namespace PX2
 		const Float3 &GetLightDiffColor () const;
 		
 		void SetLightSpecColor (const Float3 &color);
-		const Float3 &GetLightSpecColor () const;		
+		const Float3 &GetLightSpecColor () const;	
+
+		void SetAmbientScale (float scale);
+		void SetDiffuseScale (float scale);
+		void SetSpecularScale (float scale);
+		float GetAmbientScale () const;
+		float GetDiffuseScale () const;
+		float GetSpecularScale () const;
 		
 		void SetLightIntensity (float intensity);
 		float GetLightIntensity () const;
+
+		void SetBakeShadowAngle (float shadowAnge);
+		float GetBakeShadowAngle () const;
 		
 		void SetHorAngle (float angle);
 		float GetHorAngle () const;
@@ -63,6 +76,17 @@ public_internal:
 		float mVerAngle; // (0-90)
 
 		LightPtr mLight;
+
+		float mBakeShadowAngle;
+		Float2 mFogParam;
+		Float3 mFogColor;
+		Float3 mBakeSkyLightColor;
+
+		float mAmbientScale;
+		float mDiffuseScale;
+		float mSpecularScale;
+
+		Float2 mShineParam;
 	};
 
 	PX2_REGISTER_STREAM(AmbientRegionActor);

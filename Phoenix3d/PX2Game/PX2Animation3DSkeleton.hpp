@@ -9,6 +9,7 @@
 
 #include "PX2Animation.hpp"
 #include "PX2KeyframeController.hpp"
+#include "PX2FString.hpp"
 
 namespace PX2
 {
@@ -37,29 +38,19 @@ namespace PX2
 		virtual bool IsPlaying () const;
 		virtual void SetPlayOnce (bool once);
 		virtual void OnPlay (Character *character);
-		
-		Node *GetAnimObject ();
-		Node *GetAnimNode (); 
-		std::list<KeyframeControllerPtr> &GetNodeKeyframes ();
-		std::map<SkinController*, std::vector<Node*> > &GetAnimUpdateNodes ();
 
-		virtual void OnRemove (Character *character);
+		Node *GetAnimNode (); 
+		std::map<FString, KeyframeController*> &GetKeyframeCtrlMap ();
 
 public_internal:
 		virtual void SetCharacter (Character *character);
 
 	private:
-		void CalAnimUpdateNodes (SkinController *skinCtrl, 
-			const std::string &animNodeTagName, const std::string &modelTagName);
-		void CalNodeKeyframeControllers (Movable *movable,
-			std::list<KeyframeControllerPtr> &list);
+		void CollectKFC (Movable *mov, const std::string &animTagName, const std::string &modelTagName);
 
 		std::string mTagName;
-		NodePtr mAnimObject; // 当被加载就去获取mAnimNode,然后将其Detach掉
-		NodePtr mAnimNode;		
-		std::map<SkinController*, std::vector<Node*> > mAnimUpdateNodes;
-		int mNumAnimUpdateNodes;
-		std::list<KeyframeControllerPtr> mKeyframeCtrls;
+		NodePtr mAnimNode;
+		std::map<FString, KeyframeController*> mKeyframeCtrlMap;
 	};
 	
 	PX2_REGISTER_STREAM(Animation3DSkeleton);

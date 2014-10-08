@@ -91,6 +91,12 @@ void UICheckButton::OnCheck ()
 		mUICallback(this, UICT_CHECKED);
 	}
 
+	std::vector<Vistor *>::iterator it = mVistors.begin();
+	for (; it!=mVistors.end(); it++)
+	{
+		(*it)->Visit(this, (int)UICT_CHECKED);
+	}
+
 	if ("" != mScriptHandler)
 	{
 		CallString(mScriptHandler.c_str(), "i", (int)UICT_CHECKED);
@@ -102,6 +108,12 @@ void UICheckButton::OnDisCheck ()
 	if (mUICallback)
 	{
 		mUICallback(this, UICT_DISCHECKED);
+	}
+
+	std::vector<Vistor *>::iterator it = mVistors.begin();
+	for (; it!=mVistors.end(); it++)
+	{
+		(*it)->Visit(this, (int)UICT_DISCHECKED);
 	}
 
 	if ("" != mScriptHandler)

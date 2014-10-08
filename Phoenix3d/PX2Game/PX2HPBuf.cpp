@@ -63,6 +63,48 @@ void HPBuf::Update (double appSeconds, double elapsedSeconds)
 
 		mExcessHP = mExcessHP - iHP;
 	}
+	else if (M_LASTINGPERSECOND == mMode)
+	{
+		mOneSecondsTiming += (float)elapsedSeconds;
+
+		bool doCal = false;
+
+		float val = mValue;
+		if (mOneSecondsTiming > 1.0f)
+		{
+			val = mValue;
+
+			doCal = true;
+
+			mOneSecondsTiming -= 1.0f;
+		}
+
+		if (IsOver())
+		{
+			doCal = true;
+
+			val = mValue * mOneSecondsTiming;
+		}
+
+		if (doCal)
+		{
+			int curHP = mCharacter->GetCurHP();
+
+			curHP += (int)val;
+
+			if (curHP < 0.0f)
+			{
+				curHP = 0;
+			}
+
+			if (curHP > mCharacter->GetMHP())
+			{
+				curHP = mCharacter->GetMHP();
+			}
+
+			mCharacter->SetCurHP(curHP);
+		}
+	}
 	else if (M_NOREDUCE == mMode)
 	{
 		mCharacter->SetCurHPNoReduce(true);

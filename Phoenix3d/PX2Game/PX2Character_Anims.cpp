@@ -109,9 +109,6 @@ void Character::PlayAnim (Animation *anim)
 			mLastAnimObj = new0 AnimationObject();
 			mLastAnimObj->TheAnim = mCurAnim;
 			mLastAnimObj->BlendTime = 0.0f;
-
-			if (anim3dSk)
-				mLastAnimObj->AnimNode = animNode; 
 			mLastAnimObj->TheCharacter = this;
 		}
 		else
@@ -122,7 +119,7 @@ void Character::PlayAnim (Animation *anim)
 
 	if (mModelAnimMovable && mModelAnimMovable->GetParent())
 	{ // simple remove
-		charNode->DetachChild(mModelAnimMovable);
+	//	charNode->DetachChild(mModelAnimMovable);
 	}
 
 	mCurAnim = anim;
@@ -193,5 +190,18 @@ bool Character::IsNodeHasMesh (Node *node)
 	}
 
 	return false;
+}
+//----------------------------------------------------------------------------
+void Character::SetModelTagName (const std::string &modelTagName)
+{
+	mModelTagName = modelTagName;
+
+	for (int i=0; i <(int)mAnims.size(); i++)
+	{
+		if (mAnims[i])
+		{
+			mAnims[i]->SetCharacter(this);
+		}
+	}
 }
 //----------------------------------------------------------------------------

@@ -20,8 +20,7 @@ PX2_IMPLEMENT_DEFAULT_NAMES(Animation, Animation3DSkeleton);
 Animation3DSkeleton::Animation3DSkeleton (const std::string &name,
 	const std::string &animTagName)
 	:
-Animation(Animation::AT_3DSKELETON),
-mNumAnimUpdateNodes(0)
+Animation(Animation::AT_3DSKELETON)
 {
 	SetName(name);
 	SetTagName(animTagName);
@@ -50,11 +49,22 @@ void Animation3DSkeleton::SetFrequency (float frequency)
 {
 	Animation::SetFrequency(frequency);
 
-	std::list<KeyframeControllerPtr>::iterator it = mKeyframeCtrls.begin();
-	for (; it!=mKeyframeCtrls.end(); it++)
+	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
-		(*it)->Frequency = frequency;
+		KeyframeController *kfc = it->second;
+		if (kfc)
+		{
+			kfc->Frequency = frequency;
+		}
 	}
+}
+//----------------------------------------------------------------------------
+void Animation3DSkeleton::SetTagName (const std::string &tagName)
+{
+	mTagName = tagName;
+
+	SetCharacter(mCharacter);
 }
 //----------------------------------------------------------------------------
 void Animation3DSkeleton::SetFilename (const std::string &filename)
@@ -64,13 +74,13 @@ void Animation3DSkeleton::SetFilename (const std::string &filename)
 
 	Animation::SetFilename(filename);
 
-	mAnimObject = DynamicCast<Node>(PX2_RM.BlockLoadCopy(filename));
-	if (!mAnimObject)
+	NodePtr animObject = DynamicCast<Node>(PX2_RM.BlockLoadCopy(filename));
+	if (!animObject)
 		return;
 
-	for (int i=0; i<mAnimObject->GetNumChildren(); i++)
+	for (int i=0; i<animObject->GetNumChildren(); i++)
 	{
-		Movable *mov = mAnimObject->GetChild(i);
+		Movable *mov = animObject->GetChild(i);
 		Node *node = DynamicCast<Node>(mov);
 		Renderable *renderable = DynamicCast<Renderable>(mov);
 		if (node && !renderable && !Character::IsNodeHasMesh(node) && node->GetNumValidChildren()>0)
@@ -78,7 +88,7 @@ void Animation3DSkeleton::SetFilename (const std::string &filename)
 			mAnimNode = node;
 		}
 	}
-	mAnimObject->DetachChild(mAnimNode);
+	animObject->DetachChild(mAnimNode);
 
 	if (mCharacter && mCharacter->GetCurPlayingAnim()==this)
 	{
@@ -90,24 +100,26 @@ void Animation3DSkeleton::SetPlayOnce (bool once)
 {
 	Animation::SetPlayOnce(once);
 
-	std::list<KeyframeControllerPtr>::iterator it = mKeyframeCtrls.begin();
-	for (; it!=mKeyframeCtrls.end(); it++)
+	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
-		(*it)->Repeat = once ? Controller::RT_CLAMP:Controller::RT_WRAP;
+		KeyframeController *kfc = it->second;
+		if (kfc)
+		{
+			kfc->Repeat = once ? Controller::RT_CLAMP:Controller::RT_WRAP;
+		}
 	}
 }
 //----------------------------------------------------------------------------
 void Animation3DSkeleton::OnPlay (Character *character)
 {
-	if (0==mNumAnimUpdateNodes || mKeyframeCtrls.empty())
+	if (mKeyframeCtrlMap.empty())
 	{
-		SetCharacter(mCharacter);
+		SetCharacter(character);
 	}
 
-	if (0==mNumAnimUpdateNodes || mKeyframeCtrls.empty())
-	{
+	if (mKeyframeCtrlMap.empty())
 		return;
-	}
 
 	Animation::OnPlay(character);
 
@@ -116,14 +128,49 @@ void Animation3DSkeleton::OnPlay (Character *character)
 
 	if (mAnimNode)
 	{
-		charNode->AttachChild(mAnimNode);
-
-		mAnimNode->ResetPlay();
-
 		SetFrequency(GetFrequency());
 		SetPlayOnce(IsPlayOnce());
+	}
 
-		charMov->Update(GetTimeInSeconds());
+	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	for (; it!=mKeyframeCtrlMap.end(); it++)
+	{
+		KeyframeController *kfc = it->second;
+		if (kfc)
+		{
+			kfc->ResetPlay();
+		}
+	}
+}
+//----------------------------------------------------------------------------
+void Animation3DSkeleton::CollectKFC (Movable *mov,	const std::string &animTagName,
+	const std::string &modelTagName)
+{
+	if (!mov) return;
+	
+	std::string nodeName = mov->GetName();
+
+	int numContrls = mov->GetNumControllers();
+	if (1 == numContrls)
+	{
+		KeyframeController *kfc = DynamicCast<KeyframeController>(mov->GetController(0));
+		if (kfc)
+		{
+			if (!animTagName.empty())
+				nodeName = nodeName.substr(animTagName.length(), nodeName.length()-animTagName.length());
+			nodeName = modelTagName + nodeName;
+
+			mKeyframeCtrlMap[FString(nodeName.c_str())] = kfc;
+		}
+	}
+
+	Node *node = DynamicCast<Node>(mov);
+	if (node)
+	{
+		for (int i=0; i<node->GetNumChildren(); i++)
+		{
+			CollectKFC(node->GetChild(i), animTagName, modelTagName);
+		}
 	}
 }
 //----------------------------------------------------------------------------
@@ -134,88 +181,43 @@ void Animation3DSkeleton::SetCharacter (Character *character)
 	if (!character)
 		return;
 
-	Movable *charMov = character->GetMovable();
-	const std::string &modelTagName = character->GetModelTagName();
-	Node *charNode = DynamicCast<Node>(charMov);
-	std::list<SkinControllerPtr> &skinCtrls = character->GetSkinCtrls();
+	const std::string &modelTagname = character->GetModelTagName();
 
-	if (mAnimNode)
+	mKeyframeCtrlMap.clear();
+	CollectKFC(mAnimNode, mTagName, modelTagname);
+
+	Movable *animMov = character->GetModelAnimMovable();
+	std::map<FString, BlendTransformController*> &charaBTCMap = character->GetBTCMap();
+
+	std::map<FString, KeyframeController*>::iterator it = mKeyframeCtrlMap.begin();
+	for (; it!=mKeyframeCtrlMap.end(); it++)
 	{
-		mKeyframeCtrls.clear();
-		CalNodeKeyframeControllers(mAnimNode, mKeyframeCtrls);
-
-		std::list<SkinControllerPtr>::iterator it = skinCtrls.begin();
-		for (; it!=skinCtrls.end(); it++)
+		std::map<FString, BlendTransformController*>::iterator itBTC = charaBTCMap.find(it->first);
+		if (itBTC == charaBTCMap.end())
 		{
-			CalAnimUpdateNodes(*it, mTagName, modelTagName);
-		}
-	}
-}
-//----------------------------------------------------------------------------
-void Animation3DSkeleton::OnRemove (Character *character)
-{
-	Animation::OnRemove(character);
-}
-//----------------------------------------------------------------------------
-void Animation3DSkeleton::CalAnimUpdateNodes (SkinController *skinCtrl,
-	const std::string &animNodeTagName, const std::string &modelTagName)
-{
-	mNumAnimUpdateNodes = 0;
+			std::string name = it->first;
 
-	if (mAnimNode)
-	{
-		int numBones = skinCtrl->GetNumBones();
-		mAnimUpdateNodes[skinCtrl].resize(numBones);
-
-		for (int i=0; i<numBones; i++)
-		{
-			std::string boneName = skinCtrl->GetBoneNames()[i];
-
-			if (!modelTagName.empty())
-				boneName = boneName.substr(modelTagName.length(), boneName.length()-modelTagName.length());
-			boneName = animNodeTagName + boneName;
-
-			std::vector<Object *> objs;
-			mAnimNode->GetAllObjectsByName(boneName, objs);
-			if (1 == objs.size())
+			Node *node = DynamicCast<Node>(animMov->GetObjectByName((const char*)it->first));
+			if (node)
 			{
-				Node *node = DynamicCast<Node>(objs[0]);
-				if (node)
+				BlendTransformController *btcCtrl = DynamicCast<BlendTransformController>(node->GetController("BTC"));
+				if (!btcCtrl)
 				{
-					mAnimUpdateNodes[skinCtrl][i] = node;
-					mNumAnimUpdateNodes++;
+					btcCtrl = new0 BlendTransformController(0, 0, true);
+					node->AttachController(btcCtrl);
+					btcCtrl->SetName("BTC");
+
+					charaBTCMap[it->first] = btcCtrl;
 				}
 				else
 				{
-					assertion(false, "%s must be a bone.\n", boneName.c_str());
+					assertion(false, "btcCtrl must non exist.\n");
 				}
 			}
-			else if (objs.size() >= 2)
+			else
 			{
-				assertion(false, "bones with same name %s .\n", boneName.c_str());
+				assertion(false, "node must exist.\n");
 			}
-		}
-	}
-}
-//----------------------------------------------------------------------------
-void Animation3DSkeleton::CalNodeKeyframeControllers (Movable *movable, 
-	std::list<KeyframeControllerPtr> &list)
-{
-	for (int i=0; i<movable->GetNumControllers(); i++)
-	{
-		KeyframeController *kfCtrl = DynamicCast<KeyframeController>(movable->GetController(i));
-		if (kfCtrl)
-		{
-			list.push_back(kfCtrl);
-		}
-	}
-
-	Node *node = DynamicCast<Node>(movable);
-	if (node)
-	{
-		for (int i=0; i<node->GetNumChildren(); i++)
-		{
-			CalNodeKeyframeControllers(node->GetChild(i), list);
 		}
 	}
 }
@@ -249,8 +251,7 @@ void Animation3DSkeleton::OnPropertyChanged (const PropertyObject &obj)
 //----------------------------------------------------------------------------
 Animation3DSkeleton::Animation3DSkeleton (LoadConstructor value)
 	:
-Animation(value),
-mNumAnimUpdateNodes(0)
+Animation(value)
 {
 }
 //----------------------------------------------------------------------------

@@ -305,11 +305,14 @@ int StringHelp::StringToInt (const std::string &val)
 	return atoi(val.c_str());
 }
 //----------------------------------------------------------------------------
-std::string StringHelp::FloatToString (float val)
+std::string StringHelp::FloatToString (float val, int numPoint)
 {
 	static char c[10];
 	string str;
-	sprintf(c, "%.2f", val);
+	if (1 == numPoint)
+		sprintf(c, "%.1f", val);
+	else if (2 == numPoint)
+		sprintf(c, "%.2f", val);
 	str = c;
 	return str;
 }

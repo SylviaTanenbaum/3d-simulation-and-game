@@ -26,6 +26,10 @@ namespace PX2
 		virtual ~BlendTransformController ();
 
 		// Member access.  The weight w is a number for which 0 <= w <= 1.
+		void SetController0 (TransformController *ctrl0);
+		void SetController1 (TransformController *ctrl1);
+		void SetController01 (TransformController *ctrl0, TransformController *ctrl1);
+		void PushController (TransformController *ctrl);
 		inline TransformController* GetController0 () const;
 		inline TransformController* GetController1 () const;
 		inline bool GetRSMatrices () const;

@@ -367,6 +367,7 @@ void Character::RemoveBufsOfClass (const std::string &className)
 	{
 		if (className==(*it)->GetClass())
 		{
+			(*it)->OnRemoved();
 			it = mBufs.erase(it);
 		}
 		else

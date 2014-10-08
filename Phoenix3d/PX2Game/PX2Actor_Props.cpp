@@ -14,7 +14,11 @@ void Actor::SetStaticType (bool isStaticType)
 
 	if (mIsStaticType)
 	{
-		StopSpeed(true);
+		AddStopSpeedTag("StaticType");
+	}
+	else
+	{
+		RemoveStopSpeedTag("StaticType");
 	}
 }
 //----------------------------------------------------------------------------

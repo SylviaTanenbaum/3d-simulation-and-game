@@ -113,14 +113,7 @@ void Character::CalSkins ()
 				if (skinCtrl)
 				{
 					hasSkinCtrl = true;
-
-					mSkinCtrls.push_back(skinCtrl);
-
-					for (int i=0; i<skinCtrl->GetNumBones(); i++)
-					{
-						Node *animNode = skinCtrl->GetBones()[i];
-						mAnimNodeNames[skinCtrl].push_back(animNode->GetName());
-					}
+					ProcessSkin(skinCtrl);
 				}
 			}
 
@@ -138,19 +131,11 @@ void Character::CalSkins ()
 				{
 					for (int i=0; i<mesh->GetNumControllers(); i++)
 					{
-						SkinController *skinCtrl = DynamicCast<SkinController>(
-							mesh->GetController(i));
+						SkinController *skinCtrl = DynamicCast<SkinController>(mesh->GetController(i));
 						if (skinCtrl)
 						{
 							hasSkinCtrl = true;
-
-							mSkinCtrls.push_back(skinCtrl);
-
-							for (int i=0; i<skinCtrl->GetNumBones(); i++)
-							{
-								Node *animNode = skinCtrl->GetBones()[i];
-								mAnimNodeNames[skinCtrl].push_back(animNode->GetName());
-							}
+							ProcessSkin(skinCtrl);
 						}
 					}
 				}
@@ -162,10 +147,50 @@ void Character::CalSkins ()
 			}
 			else
 			{
-				mModelAnimMovable = node;
+				int numVaildChild = node->GetNumChildren();
+				if (0 != numVaildChild)
+				{
+					mModelAnimMovable = node;
+				}
 			}
 		}
 	}
+}
+//----------------------------------------------------------------------------
+void Character::ProcessSkin (SkinController *skinCtrl)
+{
+	for (int i=0; i<skinCtrl->GetNumBones(); i++)
+	{
+		Node *animNode = skinCtrl->GetBones()[i];
+		std::string animNodeName = animNode->GetName();
+
+		BlendTransformController *btc = DynamicCast<BlendTransformController>(animNode->GetController("BTC"));
+		if (!btc)
+		{
+			btc = new0 BlendTransformController(0, 0, true);
+			btc->SetName("BTC");
+		}
+		animNode->AttachController(btc);
+
+		AnimNodeObj nodeObj;
+		nodeObj.TheNode = animNode;
+		nodeObj.TheBlendCtrl = btc;
+		mSkinAnimObjs[skinCtrl].push_back(nodeObj);
+
+		mBTCMap[animNodeName.c_str()] = btc;
+	}
+}
+//----------------------------------------------------------------------------
+Character::AnimNodeObj::AnimNodeObj ()
+	:
+TheNode(0),
+TheBlendCtrl(0)
+{
+}
+//----------------------------------------------------------------------------
+Character::AnimNodeObj::~AnimNodeObj ()
+{
+
 }
 //----------------------------------------------------------------------------
 void Character::Update (double appSeconds, double elapsedSeconds)
@@ -235,33 +260,52 @@ void Character::Update (double appSeconds, double elapsedSeconds)
 		weight = mLastAnimObj->BlendTime/ANIMATION_BLENDTIME;
 	}
 
-	std::list<SkinControllerPtr>::iterator skinCtrlIt = mSkinCtrls.begin();
-	for (; skinCtrlIt!=mSkinCtrls.end(); skinCtrlIt++)
+	Animation3DSkeleton *lastAnim = 0;
+	if (mLastAnimObj) lastAnim = DynamicCast<Animation3DSkeleton>(mLastAnimObj->TheAnim);
+	Animation3DSkeleton *curAnim = DynamicCast<Animation3DSkeleton>(mCurAnim);
+
+	std::map<FString, KeyframeController*> *lastAnimKFCMap = 0;
+	if (lastAnim)
 	{
-		SkinController *skinCtrl = *skinCtrlIt;
-		Animation3DSkeleton *lastAnim = 0;
-		if (mLastAnimObj)
-			lastAnim = DynamicCast<Animation3DSkeleton>(mLastAnimObj->TheAnim);
-		Animation3DSkeleton *curAnim = DynamicCast<Animation3DSkeleton>(mCurAnim);
+		lastAnimKFCMap = &(lastAnim->GetKeyframeCtrlMap());
+	}
+	std::map<FString, KeyframeController*> *curAnimKFCMap = 0;
+	if (curAnim)
+	{
+		curAnimKFCMap = &(curAnim->GetKeyframeCtrlMap());
+	}
 
-		if (lastAnim && curAnim)
+	std::map<FString, BlendTransformController*>::iterator it = mBTCMap.begin();
+	for (; it!=mBTCMap.end(); it++)
+	{
+		FString name = it->first;
+		BlendTransformController *ctrl = it->second;
+
+		if (lastAnimKFCMap && curAnimKFCMap)
 		{
-			std::map<SkinController*, std::vector<Node*> > &lastAnimUpdateNodes = lastAnim->GetAnimUpdateNodes();
-			std::map<SkinController*, std::vector<Node*> > &curAnimUpdateNodes = curAnim->GetAnimUpdateNodes();
+			std::map<FString, KeyframeController*>::iterator itCtrl0 = (*lastAnimKFCMap).find(name);
+			std::map<FString, KeyframeController*>::iterator itCtrl1 = (*curAnimKFCMap).find(name);
 
-			if (!lastAnimUpdateNodes.empty() && !curAnimUpdateNodes.empty())
+			if (itCtrl0!=(*lastAnimKFCMap).end() && itCtrl1!=(*curAnimKFCMap).end())
 			{
-				(*skinCtrlIt)->UpdateBlender(&lastAnimUpdateNodes[skinCtrl][0], 
-					&curAnimUpdateNodes[skinCtrl][0], weight);
+				ctrl->SetController01((*lastAnimKFCMap)[name], (*curAnimKFCMap)[name]);
+				ctrl->SetWeight(weight);
 			}
 		}
-		else if (curAnim)
+		else if (curAnimKFCMap)
 		{
-			std::map<SkinController*, std::vector<Node*> > &animUpdateNodes = curAnim->GetAnimUpdateNodes();
-			if (!animUpdateNodes.empty())
+			std::map<FString, KeyframeController*>::iterator itCtrl1 = (*curAnimKFCMap).find(name);
+
+			if (itCtrl1 != (*curAnimKFCMap).end())
 			{
-				(*skinCtrlIt)->UpdateBlender(0, &animUpdateNodes[skinCtrl][0], weight);
+				ctrl->SetController0(0);
+				ctrl->SetController1((*curAnimKFCMap)[name]);
+				ctrl->SetWeight(1.0f);
 			}
+		}
+		if (!lastAnimKFCMap && !curAnim)
+		{
+			ctrl->SetController01(0, 0);
 		}
 	}
 
@@ -285,20 +329,20 @@ void Character::Update (double appSeconds, double elapsedSeconds)
 		}
 	}
 
-	std::vector<BufPtr>::iterator it = mBufs.begin();
-	for (; it!=mBufs.end();)
+	std::vector<BufPtr>::iterator itBuf = mBufs.begin();
+	for (; itBuf!=mBufs.end();)
 	{
-		Buf *buf = *it;
+		Buf *buf = *itBuf;
 		if (buf->IsOver())
 		{
-			(*it)->OnRemoved();
-			(*it)->SetCharacter(0);
+			(*itBuf)->OnRemoved();
+			(*itBuf)->SetCharacter(0);
 
-			it = mBufs.erase(it);
+			itBuf = mBufs.erase(itBuf);
 		}
 		else
 		{
-			it++;
+			itBuf++;
 		}
 	}
 }

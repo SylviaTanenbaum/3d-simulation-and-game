@@ -16,7 +16,7 @@ LightActor::LightActor ()
 	:
 mLightType(LT_POINT),
 mRange(2.0f),
-mColor(Float3::MakeColor(128.0f, 128.0f, 128.0f))
+mColor(Float3::MakeColor(128, 128, 128))
 {
 	mLight = new0 Light(Light::LT_POINT);
 	LightNode *lightNode = new0 LightNode(mLight);

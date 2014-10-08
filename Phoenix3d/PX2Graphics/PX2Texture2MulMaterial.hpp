@@ -34,31 +34,23 @@ namespace PX2
 		MaterialInstance* CreateInstance (Texture2D* texture0,
 			Texture2D* texture1) const;
 
-		// Convenience for creating an instance.  The application does not have to
-		// create the effect explicitly in order to create an instance from it.
-		static MaterialInstance* CreateUniqueInstance (
-			Texture2D* texture0,
-			Shader::SamplerFilter filter0,
-			Shader::SamplerCoordinate coordinate00,
-			Shader::SamplerCoordinate coordinate01,
-			Texture2D* texture1,
-			Shader::SamplerFilter filter1,
-			Shader::SamplerCoordinate coordinate10,
-			Shader::SamplerCoordinate coordinate11);
-
 	private:
-		static int msDx9VRegisters[1];
-		static int msOglVRegisters[1];
-		static int msOpenGLES2VRegisters[1];
+		static int msDx9VRegisters[4];
+		static int msOglVRegisters[4];
+		static int msOpenGLES2VRegisters[4];
 		static int* msVRegisters[Shader::MAX_PROFILES];
 		static std::string msVPrograms[Shader::MAX_PROFILES];
 		static int msAllPTextureUnits[2];
+		static int msDx9PRegisters[1];
+		static int msOglPRegisters[1];
+		static int msOpenGLES2PRegisters[1];
+		static int* msPRegisters[Shader::MAX_PROFILES];
 		static int* msPTextureUnits[Shader::MAX_PROFILES];
 		static std::string msPPrograms[Shader::MAX_PROFILES];
 	};
 
 	PX2_REGISTER_STREAM(Texture2MulMaterial);
-	typedef Pointer0<Texture2MulMaterial> Texture2MulEffectPtr;
+	typedef Pointer0<Texture2MulMaterial> Texture2MulMaterialPtr;
 
 }
 

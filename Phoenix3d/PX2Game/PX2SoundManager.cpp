@@ -35,7 +35,7 @@ void SoundManager::AddPreLoadSound (const std::string &filename)
 //----------------------------------------------------------------------------
 void SoundManager::PreLoad ()
 {
-	for (int i=0; i<mPreLoadSoundFiles.size(); i++)
+	for (int i=0; i<(int)mPreLoadSoundFiles.size(); i++)
 	{
 		if (!mPreLoadSoundFiles[i].empty())
 		{

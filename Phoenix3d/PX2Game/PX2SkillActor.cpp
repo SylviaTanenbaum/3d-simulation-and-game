@@ -65,7 +65,8 @@ void SkillActor::Update (double appSeconds, double elapsedSeconds)
 			Actor *actor =  scene->GetActorByID(mTargetID);
 			if (actor)
 			{
-				const APoint &targetPos = actor->GetPosition();
+				APoint targetPos = actor->GetPosition();
+				targetPos.Z() += 1.5f;
 				mCurve.Points[1].OutVal = targetPos;
 			}
 		}

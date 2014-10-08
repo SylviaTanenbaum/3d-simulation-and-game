@@ -36,7 +36,7 @@ namespace PX2
 		*/
 		enum
 		{
-			MAX_ELEMENTS = 512
+			MAX_ELEMENTS = 768
 		};
 
 		static int msNumInitializers;

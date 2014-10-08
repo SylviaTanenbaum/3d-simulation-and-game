@@ -164,6 +164,16 @@ inline float SkillStep::GetSelfPosEffectTime () const
 	return mSelfPosEffectTime;
 }
 //----------------------------------------------------------------------------
+inline void SkillStep::SetSelfPosEffectDelayTime (float seconeds)
+{
+	mSelfPosEffectDelayTime = seconeds;
+}
+//----------------------------------------------------------------------------
+inline float SkillStep::GetSelfPosEffectDelayTime () const
+{
+	return mSelfPosEffectDelayTime;
+}
+//----------------------------------------------------------------------------
 // effect1
 //----------------------------------------------------------------------------
 inline void SkillStep::SetSelfEffect1Filename (
@@ -228,6 +238,16 @@ inline float SkillStep::GetSelfPosEffect1Time () const
 	return mSelfPosEffect1Time;
 }
 //----------------------------------------------------------------------------
+inline void SkillStep::SetSelfPosEffectDelayTime1 (float seconeds)
+{
+	mSelfPosEffectDelayTime1 = seconeds;
+}
+//----------------------------------------------------------------------------
+inline float SkillStep::GetSelfPosEffectDelayTime1 () const
+{
+	return mSelfPosEffectDelayTime1;
+}
+//----------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------
 inline void SkillStep::SetTargetEffectFilename (
@@ -269,6 +289,16 @@ inline void SkillStep::SetTargetPosEffectFilename (const std::string &posEffectF
 inline const std::string &SkillStep::GetTargetPosEffectFilename () const
 {
 	return mTargetPosEffectFilename;
+}
+//----------------------------------------------------------------------------
+inline void SkillStep::SetAnimedTargetPosEffectFilename (const std::string &effectFilename)
+{
+	mAnimedTargetPosEffectFilename = effectFilename;
+}
+//----------------------------------------------------------------------------
+inline const std::string &SkillStep::GetAnimedTargetPosEffectFilename () const
+{
+	return mAnimedTargetPosEffectFilename;
 }
 //----------------------------------------------------------------------------
 inline void SkillStep::SetTargetPosEffectTime (float seconds)

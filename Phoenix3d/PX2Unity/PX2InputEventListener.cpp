@@ -517,12 +517,29 @@ bool InputEventListener::HasHandler (InputEventHandler *handler)
 	return false;
 }
 //----------------------------------------------------------------------------
+static bool IEHSortFun (const InputEventHandler *handler0, const InputEventHandler *handler1)
+{
+	int priority0 = handler0->GetPriority();
+	int priority1 = handler1->GetPriority();
+
+	if (priority0 == priority1)
+	{
+		return handler0 < handler1;
+	}
+	else
+	{
+		return priority0 > priority1;
+	}
+}
+//----------------------------------------------------------------------------
 void InputEventListener::AddHandler (InputEventHandler *handler)
 {
 	if (HasHandler(handler))
 		return;
 
 	mHandlers.push_back(handler);
+
+	std::sort(mHandlers.begin(), mHandlers.end(), IEHSortFun);
 }
 //----------------------------------------------------------------------------
 void InputEventListener::RemoveHandler (InputEventHandler *handler)
@@ -533,6 +550,9 @@ void InputEventListener::RemoveHandler (InputEventHandler *handler)
 		if (handler == *it)
 		{
 			mHandlers.erase(it);
+
+			std::sort(mHandlers.begin(), mHandlers.end(), IEHSortFun);
+
 			return;
 		}
 	}

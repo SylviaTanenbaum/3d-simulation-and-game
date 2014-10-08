@@ -31,6 +31,7 @@ namespace PX2
 		{
 			M_IMMEDIATE,
 			M_LASTING,
+			M_LASTINGPERSECOND,
 			M_NOREDUCE,
 			M_MAX_MODE
 		};
@@ -47,6 +48,8 @@ namespace PX2
 		Mode mMode;
 		float mValue;
 		float mExcessHP;
+
+		float mOneSecondsTiming;
 	};
 
 #include "PX2HPBuf.inl"

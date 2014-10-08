@@ -30,11 +30,6 @@ inline Node** SkinController::GetBones () const
 	return mBones;
 }
 //----------------------------------------------------------------------------
-inline std::string *SkinController::GetBoneNames () const
-{
-	return mBonesName;
-}
-//----------------------------------------------------------------------------
 inline float** SkinController::GetWeights () const
 {
 	return mWeights;

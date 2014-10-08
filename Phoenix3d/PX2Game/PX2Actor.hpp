@@ -128,11 +128,15 @@ public_internal:
 
 		PX2_DECLARE_PM_F(MaxSpeed);
 	public:
-		virtual void OnMaxSpeedModified ();
 		float GetPercentSpeedOverModified ();
 
+		void AddStopSpeedTag (const std::string &tag);
+		void RemoveStopSpeedTag (const std::string &tag);
+		bool IsHasStopSpeedTag (const std::string &tag) const;
+		const std::vector<std::string> GetStopSpeedTags () const;
 		virtual void StopSpeed (bool stopSpeed);
 		bool IsStopSpeed () const;
+
 		virtual void SetVelocity (const AVector &vec);
 		const AVector &GetVelocity () const;
 		float GetSpeed () const;
@@ -148,6 +152,7 @@ public_internal:
 		APoint mRotation;
 		APoint mPosition;
 
+		std::vector<std::string> mStopSpeedTags;
 		bool mIsStopSpeed;
 		AVector mVelocity;
 		AVector mHeading;
@@ -198,12 +203,17 @@ public_internal:
 		void SetBakeTarget (bool bakeTarget);
 		bool IsBakeTarget () const;
 
+		void ClearBakeTextures ();
+		void AddBakeTxture (const std::string &name, const std::string &bakeTexture);
+		void SetUseLightTexture (bool use);
+
 	protected:
 		void _SetBakeObject (Movable *mov, bool bakeObject);
 		void _SetBakeTarget (Movable *mov, bool bakeTarget);
 
 		bool mIsBakeObject;
 		bool mIsBakeTarget;
+		std::map<std::string, std::string> mBakeTextures;
 
 		// SaveLoad
 	public:

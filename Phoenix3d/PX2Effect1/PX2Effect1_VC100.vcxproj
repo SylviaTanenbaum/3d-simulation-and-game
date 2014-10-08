@@ -33,6 +33,8 @@
     <ClInclude Include="PX2EffectMaterial.hpp" />
     <ClInclude Include="PX2EffectModel.hpp" />
     <ClInclude Include="PX2EffectModelController.hpp" />
+    <ClInclude Include="PX2EffectModelNode.hpp" />
+    <ClInclude Include="PX2EffectModelNodeController.hpp" />
     <ClInclude Include="PX2EffectModule.hpp" />
     <ClInclude Include="PX2EffectModuleCallbacks_BeamEmitter.hpp" />
     <ClInclude Include="PX2EffectModuleCallbacks_CameraShake.hpp" />
@@ -68,6 +70,8 @@
     <ClCompile Include="PX2EffectMaterial.cpp" />
     <ClCompile Include="PX2EffectModel.cpp" />
     <ClCompile Include="PX2EffectModelController.cpp" />
+    <ClCompile Include="PX2EffectModelNode.cpp" />
+    <ClCompile Include="PX2EffectModelNodeController.cpp" />
     <ClCompile Include="PX2EffectModule.cpp" />
     <ClCompile Include="PX2EffectModuleCallbacks_BeamEmitter.cpp" />
     <ClCompile Include="PX2EffectModuleCallbacks_CameraShake.cpp" />
@@ -97,6 +101,7 @@
     <None Include="PX2EffectableController.inl" />
     <None Include="PX2EffectModel.inl" />
     <None Include="PX2EffectModelController.inl" />
+    <None Include="PX2EffectModelNode.inl" />
     <None Include="PX2EffectModule.inl" />
     <None Include="PX2EffectNode.inl" />
     <None Include="PX2ParticleEmitter.inl" />

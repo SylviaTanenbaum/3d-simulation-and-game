@@ -35,3 +35,23 @@ inline PX2::Camera *GraphicsRoot::GetCamera()
 	return mCamera;
 }
 //----------------------------------------------------------------------------
+inline void GraphicsRoot::SetFogParam (const Float4 &param)
+{
+	mFogParam = param;
+}
+//----------------------------------------------------------------------------
+inline const Float4 &GraphicsRoot::GetFogParam () const
+{
+	return mFogParam;
+}
+//----------------------------------------------------------------------------
+inline void GraphicsRoot::SetFogColor (const Float4 &fogColor)
+{
+	mFogColor = fogColor;
+}
+//----------------------------------------------------------------------------
+inline const Float4 &GraphicsRoot::GetFogColor () const
+{
+	return mFogColor;
+}
+//----------------------------------------------------------------------------

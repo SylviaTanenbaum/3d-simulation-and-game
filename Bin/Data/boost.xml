@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<boost name="boost">
+	<Config>
+		<var width="450" height="800"/>
+	</Config>
+	<Play>
+		<var projectPath="Data/projects/phoenix.px2proj"/>
+	</Play>
+</boost>

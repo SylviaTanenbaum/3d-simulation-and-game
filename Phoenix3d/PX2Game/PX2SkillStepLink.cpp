@@ -11,6 +11,7 @@
 #include "PX2Scene.hpp"
 #include "PX2ResourceManager.hpp"
 #include "PX2Project.hpp"
+#include "PX2DeletingManager.hpp"
 using namespace PX2;
 
 PX2_IMPLEMENT_RTTI(PX2, SkillStep, SkillStepLink);
@@ -41,6 +42,7 @@ void SkillStepLink::OnEnter (SkillInstance *instance)
 	Skill *skill = instance->GetSkill();
 	Character *character = skill->GetCharacter();
 	Scene *scene = character->GetScene();
+	Node *sceneNode = DynamicCast<Node>(scene->GetSceneNode());
 	APoint charPos = character->GetPosition();
 
 	int aimTarget = instance->GetAimTarget();
@@ -83,6 +85,41 @@ void SkillStepLink::OnEnter (SkillInstance *instance)
 		scene->AddActor(skillActorLink);
 
 		skillActorLink->Start();
+
+		if (!mSelfPosEffectFilename.empty())
+		{
+			APoint pos = character->GetPosition();
+			Transform trans;
+			trans.SetTranslate(pos);
+			trans.SetRotate(character->GetMovable()->WorldTransform.GetRotate());
+
+			if (!mSelfPosEffectFilename.empty())
+			{
+				Node *anchor = character->GetAnchor(mSelfPosEffectAnchor);
+				if (anchor)
+				{
+					//trans = anchor->WorldTransform;
+					trans.SetTranslate(anchor->WorldTransform.GetTranslate());
+				}
+			}
+
+			Object *obj = PX2_RM.BlockLoadShareCopy(mSelfPosEffectFilename, false,
+				false, true);
+			if (obj)
+			{
+				EffectNode *effectNode = DynamicCast<EffectNode>(obj);
+				if (effectNode)
+				{
+					effectNode->SetSelfCtrled(true);
+					effectNode->WorldTransform = trans;
+					effectNode->WorldTransformIsCurrent = true;
+					sceneNode->AttachChild(effectNode);
+					effectNode->ResetPlay();
+
+					PX2_DM.AddDeletingObj(effectNode, mSelfPosEffectTime, 3.0f);
+				}
+			}
+		}
 	}
 	else
 	{

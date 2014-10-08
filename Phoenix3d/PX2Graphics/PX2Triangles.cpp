@@ -464,3 +464,22 @@ AVector Triangles::ComputeTangent (
 	return (diffV1V0*diffP2P0 - diffV2V0*diffP1P0)/det;
 }
 //----------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------
+// Property
+//----------------------------------------------------------------------------
+void Triangles::RegistProperties ()
+{
+	Renderable::RegistProperties();
+
+	AddPropertyClass("Triangles");
+
+	AddProperty("NumVertexes", Object::PT_INT, GetNumVertices(), false);
+	AddProperty("NumTriangles", Object::PT_INT, GetNumTriangles(), false);
+}
+//----------------------------------------------------------------------------
+void Triangles::OnPropertyChanged (const PropertyObject &obj)
+{
+	Renderable::OnPropertyChanged(obj);
+}
+//----------------------------------------------------------------------------

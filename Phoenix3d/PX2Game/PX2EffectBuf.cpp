@@ -43,14 +43,18 @@ void EffectBuf::OnAdded ()
 {
 	Buf::OnAdded();
 
-	if (mAnchor.empty())
-		return;
-
 	if (mEffectFilename.empty())
 		return;
 
-	Node *node = mCharacter->GetAnchor(mAnchor);
-	if (node)
+	Node *nodeAttach =0;
+	if (!mAnchor.empty())
+		nodeAttach = mCharacter->GetAnchor(mAnchor);
+	if (!nodeAttach)
+	{
+		nodeAttach = DynamicCast<Node>(mCharacter->GetMovable());
+	}
+
+	if (nodeAttach)
 	{
 		Object *obj = PX2_RM.BlockLoadShareCopy(mEffectFilename, false, false,
 			true);
@@ -61,7 +65,7 @@ void EffectBuf::OnAdded ()
 			{
 				mEffect = en;
 				mEffect->SetSelfCtrled(true);
-				node->AttachChild(mEffect);
+				nodeAttach->AttachChild(mEffect);
 				mEffect->ResetPlay();
 			}
 			else

@@ -28,14 +28,6 @@ void AnimationObject::Update (double appTime, double elapsedTime)
 //----------------------------------------------------------------------------
 void AnimationObject::BeforeRemove ()
 {
-	Movable *charMov = TheCharacter->GetMovable();
-	Node *charNode = DynamicCast<Node>(charMov);
-
-	if (charNode)
-	{
-		charNode->DetachChild(AnimNode);
-	}
-
 	TheCharacter = 0;
 }
 //----------------------------------------------------------------------------

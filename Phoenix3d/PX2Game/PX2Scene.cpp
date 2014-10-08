@@ -111,6 +111,9 @@ void Scene::GetRangeActors (std::vector<Actor*> &actors, const APoint &center,
 		for (int i=0; i<GetNumActors(); i++)
 		{
 			Actor *actor = GetActor(i);
+			if (!actor->IsVisible())
+				continue;
+
 			const APoint &pos = actor->GetPosition();
 			AVector dir = pos - center;
 			float lengthSquare = dir.SquaredLength();

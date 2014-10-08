@@ -29,21 +29,15 @@ PX2_IMPLEMENT_DEFAULT_NAMES(Material, StandardESMaterial_Default);
 StandardESMaterial_Default::StandardESMaterial_Default ()
 {
 	VertexShader* vshader = new0 VertexShader("PX2.StandardESMaterial_Default",
-		3, 3, 7, 0, false);
-	vshader->SetInput(0, "modelPosition", Shader::VT_FLOAT3,
-		Shader::VS_POSITION);
-	vshader->SetInput(1, "modelNormal", Shader::VT_FLOAT3,
-		Shader::VS_NORMAL);
-	vshader->SetInput(2, "modelTCoord0", Shader::VT_FLOAT2,
-		Shader::VS_TEXCOORD0);
+		4, 3, 7, 0, false);
+	vshader->SetInput(0, "modelPosition", Shader::VT_FLOAT3, Shader::VS_POSITION);
+	vshader->SetInput(1, "modelColor0", Shader::VT_FLOAT4, Shader::VS_COLOR0);
+	vshader->SetInput(2, "modelNormal", Shader::VT_FLOAT3, Shader::VS_NORMAL);
+	vshader->SetInput(3, "modelTCoord0", Shader::VT_FLOAT2, Shader::VS_TEXCOORD0);
 
-	vshader->SetOutput(0, "clipPosition", Shader::VT_FLOAT4,
-		Shader::VS_POSITION);
-	vshader->SetOutput(1, "vertexTCoord0", Shader::VT_FLOAT2,
-		Shader::VS_TEXCOORD0);
-
-	vshader->SetOutput(2, "vertexTCoord1", Shader::VT_FLOAT4,
-		Shader::VS_TEXCOORD1);
+	vshader->SetOutput(0, "clipPosition", Shader::VT_FLOAT4, Shader::VS_POSITION);
+	vshader->SetOutput(1, "vertexTCoord0", Shader::VT_FLOAT2, Shader::VS_TEXCOORD0);
+	vshader->SetOutput(2, "vertexTCoord1", Shader::VT_FLOAT4, Shader::VS_TEXCOORD1);
 
 	vshader->SetConstant(0, "gPVWMatrix", 4);
 	vshader->SetConstant(1, "gShineEmissive", 1);
@@ -59,13 +53,10 @@ StandardESMaterial_Default::StandardESMaterial_Default ()
 
 	PixelShader* pshader = new0 PixelShader("PX2.StandardESMaterial_Default",
 		2, 1, 0, 1, false);
-	pshader->SetInput(0, "vertexTCoord0", Shader::VT_FLOAT2,
-		Shader::VS_TEXCOORD0);
-	pshader->SetInput(1, "vertexTCoord1", Shader::VT_FLOAT4,
-		Shader::VS_TEXCOORD1);
+	pshader->SetInput(0, "vertexTCoord0", Shader::VT_FLOAT2, Shader::VS_TEXCOORD0);
+	pshader->SetInput(1, "vertexTCoord1", Shader::VT_FLOAT4, Shader::VS_TEXCOORD1);
 
-	pshader->SetOutput(0, "pixelColor", Shader::VT_FLOAT4,
-		Shader::VS_COLOR0);
+	pshader->SetOutput(0, "pixelColor", Shader::VT_FLOAT4, Shader::VS_COLOR0);
 
 	pshader->SetSampler(0, "gDiffuseSampler", Shader::ST_2D);
 	pshader->SetFilter(0, Shader::SF_LINEAR);
@@ -247,24 +238,26 @@ std::string StandardESMaterial_Default::msVPrograms[Shader::MAX_PROFILES] =
 	"vs_2_0\n"
 	"def c10, 1.00000000, 0.00000000, 0, 0\n"
 	"dcl_position0 v0\n"
-	"dcl_texcoord0 v2\n"
-	"dcl_normal0 v1\n"
+	"dcl_texcoord0 v3\n"
+	"dcl_normal0 v2\n"
+	"dcl_color0 v1\n"
 	"mov r0.xyz, c8\n"
 	"mov r1.xyz, c7\n"
 	"mul r1.xyz, c5, r1\n"
-	"dp3 r0.w, v1, -c9\n"
-	"mul r0.xyz, c6, r0\n"
+	"dp3 r0.w, v2, -c9\n"
 	"max r0.w, r0, c10.y\n"
+	"mul r0.xyz, c6, r0\n"
 	"add r1.xyz, r1, c4\n"
-	"mad oT1.xyz, r0, r0.w, r1\n"
+	"mad r0.xyz, r0, r0.w, r1\n"
+	"mov r0.w, c6\n"
+	"mul oT1, r0, v1\n"
 	"mov r0.w, c10.x\n"
 	"mov r0.xyz, v0\n"
 	"dp4 oPos.w, r0, c3\n"
 	"dp4 oPos.z, r0, c2\n"
 	"dp4 oPos.y, r0, c1\n"
 	"dp4 oPos.x, r0, c0\n"
-	"mov oT0.xy, v2\n"
-	"mov oT1.w, c6\n",
+	"mov oT0.xy, v3\n",
 
 	// VP_VS_3_0
 	"vs_3_0\n"
@@ -273,24 +266,26 @@ std::string StandardESMaterial_Default::msVPrograms[Shader::MAX_PROFILES] =
 	"dcl_texcoord1 o2\n"
 	"def c10, 1.00000000, 0.00000000, 0, 0\n"
 	"dcl_position0 v0\n"
-	"dcl_texcoord0 v2\n"
-	"dcl_normal0 v1\n"
+	"dcl_texcoord0 v3\n"
+	"dcl_normal0 v2\n"
+	"dcl_color0 v1\n"
 	"mov r0.xyz, c8\n"
 	"mov r1.xyz, c7\n"
 	"mul r1.xyz, c5, r1\n"
-	"dp3 r0.w, v1, -c9\n"
-	"mul r0.xyz, c6, r0\n"
+	"dp3 r0.w, v2, -c9\n"
 	"max r0.w, r0, c10.y\n"
+	"mul r0.xyz, c6, r0\n"
 	"add r1.xyz, r1, c4\n"
-	"mad o2.xyz, r0, r0.w, r1\n"
+	"mad r0.xyz, r0, r0.w, r1\n"
+	"mov r0.w, c6\n"
+	"mul o2, r0, v1\n"
 	"mov r0.w, c10.x\n"
 	"mov r0.xyz, v0\n"
 	"dp4 o0.w, r0, c3\n"
 	"dp4 o0.z, r0, c2\n"
 	"dp4 o0.y, r0, c1\n"
 	"dp4 o0.x, r0, c0\n"
-	"mov o1.xy, v2\n"
-	"mov o2.w, c6\n",
+	"mov o1.xy, v3\n",
 
 	// VP_ARBVP1
 	"",

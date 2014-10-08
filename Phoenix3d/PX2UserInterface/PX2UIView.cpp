@@ -63,6 +63,8 @@ mPressedY(0.0f)
 #else
 	mMoveAdjuge = 64.0f;
 #endif
+
+	SetPriority(10);
 }
 //----------------------------------------------------------------------------
 UIView::~UIView ()

@@ -58,7 +58,7 @@ mIsShowHeadingDir(false)
 			mOffsetNode->AttachChild(mFootUpNode);
 
 			mCenterNode = new0 Node();
-			mCenterNode->SetName("Center");
+			mCenterNode->SetName("center");
 			mCenterNode->LocalTransform.SetTranslate(APoint(0.0f, mHeight/2.0f, 0.2f));
 			mOffsetNode->AttachChild(mCenterNode);
 
@@ -137,29 +137,6 @@ void Character2DFrames8::Update (double appSeconds, double elapsedSeconds)
 	//	if (skillCDTime < atkAnimTime)
 	//	{
 	//		animAttack->SetTime(skill->GetMCDTime());
-	//	}
-	//}
-}
-//----------------------------------------------------------------------------
-void Character2DFrames8::OnMaxSpeedModified()
-{
-	Character::OnMaxSpeedModified();
-
-	//Animation2DFrames8 *animMove = (Animation2DFrames8*)(GetMoveAnim());
-	//float percent = GetPercentSpeedOverModified();
-	//float modifiedSpeed = GetMMaxSpeed();
-
-	//if (animMove)
-	//{
-	//	if (0.0f != modifiedSpeed)
-	//	{
-	//		float normalTime = animMove->GetNormalTime();
-	//		float time = normalTime * percent;
-	//		animMove->SetTime(time);
-	//	}
-	//	else
-	//	{
-	//		animMove->SetTime(9999.9f);
 	//	}
 	//}
 }

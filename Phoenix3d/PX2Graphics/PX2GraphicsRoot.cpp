@@ -14,6 +14,8 @@ std::string GraphicsRoot::PX2Path;
 //----------------------------------------------------------------------------
 GraphicsRoot::GraphicsRoot ()
 {
+	mFogParam = Float4(0.0f, 120.0f, 0.0f, 0.0f);
+	mFogColor = Float4::RED;
 }
 //----------------------------------------------------------------------------
 GraphicsRoot::~GraphicsRoot ()
@@ -57,6 +59,9 @@ bool GraphicsRoot::Initlize ()
 //-----------------------------------------------------------------------------
 bool GraphicsRoot::Terminate ()
 {
+	mCamera = 0;
+	mAllLights.clear();
+
 	Environment::RemoveAllDirectories();
 
 	InitTerm::ExecuteTerminators();

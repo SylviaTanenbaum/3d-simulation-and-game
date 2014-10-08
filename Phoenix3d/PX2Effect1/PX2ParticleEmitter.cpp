@@ -10,7 +10,7 @@
 #include "PX2EffectModuleCallbacks_ParticleEmitter.hpp"
 using namespace PX2;
 
-PX2_IMPLEMENT_RTTI_V(PX2, Effectable, ParticleEmitter, 4);
+PX2_IMPLEMENT_RTTI_V(PX2, Effectable, ParticleEmitter, 5);
 PX2_IMPLEMENT_STREAM(ParticleEmitter);
 PX2_IMPLEMENT_FACTORY(ParticleEmitter);
 PX2_IMPLEMENT_DEFAULT_NAMES(Effectable, ParticleEmitter);
@@ -38,7 +38,11 @@ mPlacerOutLength(1.0f),
 mPlacerInWidth(0.0f),
 mPlacerOutWidth(1.0f),
 mPlacerInHeight(0.0f),
-mPlacerOutHeight(1.0f)
+mPlacerOutHeight(1.0f),
+mCollisionType(CT_NONE),
+mCollisionOption(CO_REFLECT),
+mCollisionHeight(0.0f),
+mCollisionSpeedPercent(1.0f)
 {
 	mAnchorPoint = Float2(0.5f, 0.5f);
 	mEmitDir = AVector::UNIT_Z;
@@ -319,6 +323,7 @@ void ParticleEmitter::RegistProperties ()
 	AddProperty("EmitDir", PT_AVECTOR3, GetEmitDir());
 	AddProperty("IsEmitDirLocal", PT_BOOL, IsEmitDirLocal());
 	AddProperty("EmitSpeed", PT_FLOAT, GetEmitSpeed());
+	AddProperty("Obstruct", PT_AVECTOR3, GetObstruct());
 	AddProperty("EmitAccelerateDir", PT_AVECTOR3, GetEmitAccelerateDir());
 	AddProperty("EmitAccelerate", PT_FLOAT, GetEmitAccelerate());
 	AddProperty("EmitAttactPoint", PT_APOINT3, GetEmitAttactPoint());
@@ -330,6 +335,17 @@ void ParticleEmitter::RegistProperties ()
 	placerTypes.push_back("PT_SPHERE");
 	placerTypes.push_back("PT_COLUMN");
 	AddPropertyEnum("PlacerType", (int)GetPlacerType(), placerTypes);
+
+	std::vector<std::string> collisionTypes;
+	collisionTypes.push_back("CT_NONE");
+	collisionTypes.push_back("CT_FACE_HEIGHTUP");
+	AddPropertyEnum("CollisionType", (int)GetCollisionType(), collisionTypes);
+	std::vector<std::string> collisionOptions;
+	collisionOptions.push_back("CO_REFLECT");
+	collisionOptions.push_back("CO_DEAD");
+	AddPropertyEnum("CollisionOption", (int)GetCollisionOption(), collisionOptions);
+	AddProperty("CollisionFaceHeight", PT_FLOAT, GetCollisionFaceHeight());
+	AddProperty("CollisionSpeedPercent", PT_FLOAT, GetCollisionSpeedPercent());
 
 	AddProperty("PlacerInLength", PT_FLOAT, GetPlacerInLength());
 	AddProperty("PlacerOutLength", PT_FLOAT, GetPlacerOutLength());
@@ -399,6 +415,10 @@ void ParticleEmitter::OnPropertyChanged (const PropertyObject &obj)
 	{
 		SetEmitSpeed(PX2_ANY_AS(obj.Data, float));
 	}
+	else if ("Obstruct" == obj.Name)
+	{
+		SetObstruct(PX2_ANY_AS(obj.Data, AVector));
+	}
 	else if ("EmitAccelerateDir" == obj.Name)
 	{
 		SetEmitAccelerateDir(PX2_ANY_AS(obj.Data, AVector));
@@ -418,6 +438,22 @@ void ParticleEmitter::OnPropertyChanged (const PropertyObject &obj)
 	else if ("EmitRate" == obj.Name)
 	{
 		SetEmitRate(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("CollisionType" == obj.Name)
+	{
+		SetCollisionType((CollisionType)PX2_ANY_AS(obj.Data, int));
+	}
+	else if ("CollisionOption" == obj.Name)
+	{
+		SetCollisionOption((CollisionOption)PX2_ANY_AS(obj.Data, int));
+	}
+	else if ("CollisionFaceHeight" == obj.Name)
+	{
+		SetCollisionFaceHeight(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("CollisionSpeedPercent" == obj.Name)
+	{
+		SetCollisionSpeedPercent(PX2_ANY_AS(obj.Data, float));
 	}
 	else if ("PlacerType" == obj.Name)
 	{
@@ -472,7 +508,11 @@ mPlacerOutLength(1.0f),
 mPlacerInWidth(0.0f),
 mPlacerOutWidth(1.0f),
 mPlacerInHeight(0.0f),
-mPlacerOutHeight(1.0f)
+mPlacerOutHeight(1.0f),
+mCollisionType(CT_NONE),
+mCollisionOption(CO_REFLECT),
+mCollisionHeight(0.0f),
+mCollisionSpeedPercent(1.0f)
 {
 	mAnchorPoint = Float2(0.5f, 0.5f);
 	mEmitDir = AVector::UNIT_Z;
@@ -542,6 +582,15 @@ void ParticleEmitter::Load (InStream& source)
 		source.ReadEnum(mEmitDirType);
 	}
 
+	if (5 <= readedVersion)
+	{	
+		source.ReadAggregate(mObstruct);
+		source.ReadEnum(mCollisionType);
+		source.ReadEnum(mCollisionOption);
+		source.Read(mCollisionHeight);
+		source.Read(mCollisionSpeedPercent);
+	}
+
 	PX2_END_DEBUG_STREAM_LOAD(ParticleEmitter, source);
 }
 //----------------------------------------------------------------------------
@@ -599,6 +648,12 @@ void ParticleEmitter::Save (OutStream& target) const
 	target.Write(mPlacerInHeight);
 	target.Write(mPlacerOutHeight);
 	target.WriteEnum(mEmitDirType);
+
+	target.WriteAggregate(mObstruct);
+	target.WriteEnum(mCollisionType);
+	target.WriteEnum(mCollisionOption);
+	target.Write(mCollisionHeight);
+	target.Write(mCollisionSpeedPercent);
 
 	PX2_END_DEBUG_STREAM_SAVE(ParticleEmitter, target);
 }
@@ -705,10 +760,25 @@ int ParticleEmitter::GetStreamingSize (Stream &stream) const
 		{
 			size += PX2_ENUMSIZE(mEmitDirType);
 		}
+
+		if (5 <= readedVersion)
+		{
+			size += sizeof(mObstruct);
+			size += PX2_ENUMSIZE(mCollisionType);
+			size += PX2_ENUMSIZE(mCollisionOption);
+			size += sizeof(mCollisionHeight);
+			size += sizeof(mCollisionSpeedPercent);
+		}
 	}
 	else
 	{
 		size += PX2_ENUMSIZE(mEmitDirType);
+
+		size += sizeof(mObstruct);
+		size += PX2_ENUMSIZE(mCollisionType);
+		size += PX2_ENUMSIZE(mCollisionOption);
+		size += sizeof(mCollisionHeight);
+		size += sizeof(mCollisionSpeedPercent);
 	}
 
 	return size;

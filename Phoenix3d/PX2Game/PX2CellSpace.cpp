@@ -107,6 +107,9 @@ void CellSpace::CalculateNeighbors (std::vector<Actor*> &actors,
 			std::list<Actor*>::iterator it = curCell->Members.begin();
 			for (; it!=curCell->Members.end(); ++it)
 			{   
+				if (!(*it)->IsVisible())
+					continue;
+
 				AVector disDir = (*it)->GetPosition() - targetPos;
 				float distanceSquared = disDir.SquaredLength();
 

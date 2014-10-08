@@ -7,6 +7,7 @@
 #include "PX2SkillStepRangeTime.hpp"
 #include "PX2ResourceManager.hpp"
 #include "PX2DeletingManager.hpp"
+#include "PX2AddingManager.hpp"
 #include "PX2Character.hpp"
 #include "PX2Scene.hpp"
 using namespace PX2;
@@ -48,6 +49,7 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 	std::string selfPosEffectFilename = mSelfPosEffectFilename;
 	std::string selfPosEffectAnchor = mSelfPosEffectAnchor;
 	float selfPosEffectTime = mSelfPosEffectTime;
+	float selfPosEffectDelayTime = mSelfPosEffectDelayTime;
 
 	int animIndex = 0;
 	if (prob <= mAnimProb)
@@ -60,6 +62,7 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 		selfPosEffectFilename = mSelfPosEffectFilename;
 		selfPosEffectAnchor = mSelfPosEffectAnchor;
 		selfPosEffectTime = mSelfPosEffectTime;
+		selfPosEffectDelayTime = mSelfPosEffectDelayTime;
 	}
 	else
 	{
@@ -71,15 +74,16 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 		selfPosEffectFilename = mSelfPosEffect1Filename;
 		selfPosEffectAnchor = mSelfPosEffect1Anchor;
 		selfPosEffectTime = mSelfPosEffect1Time;
+		selfPosEffectDelayTime = mSelfPosEffectDelayTime1;
 	}
 
 	if (!animName.empty())
 		character->PlayAnimByName(animName);
 
-
+	// self effect
 	if (!selfEffectFilename.empty())
 	{	
-		std::string anchorName = "Center";
+		std::string anchorName = "center";
 
 		if (!selfEffectAnchor.empty())
 			anchorName = selfEffectAnchor;
@@ -95,15 +99,17 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 				if (effectNode)
 				{
 					effectNode->SetSelfCtrled(true);
-					anchor->AttachChild(effectNode);
+					//anchor->AttachChild(effectNode);
 					effectNode->ResetPlay();
 
+					PX2_ADM.AddAddingObj(anchor, effectNode, selfPosEffectDelayTime, true);
 					PX2_DM.AddDeletingObj(effectNode, selfEffectTime, 3.0f);
 				}
 			}
 		}
 	}
 
+	// self pos effect
 	if (!selfPosEffectFilename.empty())
 	{
 		APoint pos = character->GetPosition();
@@ -138,11 +144,12 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 		}
 	}
 
+	// target effect
 	if (!mTargetEffectFilename.empty())
 	{
 		for (int i=0; i<instance->GetNumTargets(); i++)
 		{
-			std::string anchorName = "Center";
+			std::string anchorName = "center";
 
 			if (!mTargetEffectAnchor.empty())
 				anchorName = mTargetEffectAnchor;
@@ -151,6 +158,11 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 			if (target)
 			{
 				Node *anchor = target->GetAnchor(anchorName);
+				if (!anchor)
+				{
+					anchor = DynamicCast<Node>(target->GetMovable());
+				}
+
 				if (anchor)
 				{
 					Object *obj = PX2_RM.BlockLoadShareCopy(mTargetEffectFilename,
@@ -170,26 +182,61 @@ void SkillStepRangeTime::OnEnter (SkillInstance *instance)
 		}
 	}
 
-	EffectActor *ea = instance->GetSkillActor(instance->GetAimTarget());
-	if (ea)
+	// target pos effect
+	if (!mTargetPosEffectFilename.empty())
 	{
-		const APoint &curPos = ea->GetPosition();
-
-		if (!mTargetPosEffectFilename.empty())
+		for (int i=0; i<instance->GetNumTargets(); i++)
 		{
-			Object *obj = PX2_RM.BlockLoadShareCopy(mTargetPosEffectFilename, 
-				false, false, true);
+			Character *target = instance->GetTargetCharacter(i);
+			if (target)
+			{
+				const APoint &pos = target->GetPosition();
+				Transform trans;
+				trans.SetTranslate(pos);
+
+				Object *obj = PX2_RM.BlockLoadShareCopy(mTargetPosEffectFilename, false, false, true);
+				if (obj)
+				{
+					EffectNode *effectNode = DynamicCast<EffectNode>(obj);
+					if (effectNode)
+					{
+						effectNode->SetSelfCtrled(true);
+						effectNode->WorldTransform = trans;
+						effectNode->WorldTransformIsCurrent = true;
+						sceneNode->AttachChild(effectNode);
+						effectNode->ResetPlay();
+
+						PX2_DM.AddDeletingObj(effectNode, mTargetPosEffectTime, 3.0f);
+					}
+				}
+			}
+		}
+	}
+
+	// animed target pos effect
+	if (!mAnimedTargetPosEffectFilename.empty())
+	{
+		int animTargetID = instance->GetAimTarget();
+		Character *aimTarget = DynamicCast<Character>(scene->GetActorByID(animTargetID));
+		if (aimTarget)
+		{
+			const APoint &pos = aimTarget->GetPosition();
+			Transform trans;
+			trans.SetTranslate(pos);
+
+			Object *obj = PX2_RM.BlockLoadShareCopy(mAnimedTargetPosEffectFilename, false, false, true);
 			if (obj)
 			{
 				EffectNode *effectNode = DynamicCast<EffectNode>(obj);
 				if (effectNode)
 				{
 					effectNode->SetSelfCtrled(true);
-					effectNode->LocalTransform.SetTranslate(curPos);
+					effectNode->WorldTransform = trans;
+					effectNode->WorldTransformIsCurrent = true;
 					sceneNode->AttachChild(effectNode);
 					effectNode->ResetPlay();
 
-					PX2_DM.AddDeletingObj(effectNode, mTargetPosEffectTime, 3.0f);
+					PX2_DM.AddDeletingObj(effectNode, selfPosEffectTime, 3.0f);
 				}
 			}
 		}

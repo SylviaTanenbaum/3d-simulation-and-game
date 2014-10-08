@@ -78,6 +78,9 @@ namespace PX2
 		void SetEmitAttactStrength (const AVector &strength);
 		const AVector &GetEmitAttackStrength () const;
 
+		void SetObstruct (const AVector &obs);
+		const AVector &GetObstruct () const;
+
 		enum RotateAxisType
 		{
 			RAT_D,
@@ -97,6 +100,30 @@ namespace PX2
 
 		void SetEmitRotateSpeed (float speed);
 		float GetEmitRotateSpeed () const;
+
+		enum CollisionType
+		{
+			CT_NONE,
+			CT_FACE_HEIGHTUP,
+			CT_MAX_TYPE
+		};
+		void SetCollisionType (CollisionType type);
+		CollisionType GetCollisionType () const;
+
+		enum CollisionOption
+		{
+			CO_REFLECT,
+			CO_DEAD,
+			CO_MAX_TYPE
+		};
+		void SetCollisionOption (CollisionOption type);
+		CollisionOption GetCollisionOption () const;
+
+		void SetCollisionFaceHeight (float height);
+		float GetCollisionFaceHeight () const;
+
+		void SetCollisionSpeedPercent (float percent);
+		float GetCollisionSpeedPercent () const;
 
 		enum PlacerType
 		{
@@ -159,6 +186,12 @@ public_internal:
 		float mPlacerOutWidth;
 		float mPlacerInHeight;
 		float mPlacerOutHeight;
+
+		AVector mObstruct;
+		CollisionType mCollisionType;
+		CollisionOption mCollisionOption;
+		float mCollisionHeight;
+		float mCollisionSpeedPercent;
 	};
 
 #include "PX2ParticleEmitter.inl"

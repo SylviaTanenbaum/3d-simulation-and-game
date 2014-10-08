@@ -39,6 +39,9 @@ bool BlendTransformController::Update (double applicationTime)
 		return false;
 	}
 
+	if (!mController0 && !mController1)
+		return false;
+
 	if (mController0)
 		mController0->Update(applicationTime);
 
@@ -123,18 +126,72 @@ bool BlendTransformController::Update (double applicationTime)
 			mTransform.SetMatrix(blendMat);
 		}
 	}
+	else if (mController0 || mController1)
+	{
+		TransformController *ctrl = 0;
+		if (mController0)
+			ctrl = mController0;
+		else if(mController1)
+			ctrl = mController1;
+
+		const Transform& xfrm = ctrl->GetTransform();
+		mTransform = xfrm;
+	}
 
 	Movable* mov = StaticCast<Movable>(mObject);
 	mov->LocalTransform = mTransform;
 	return true;
 }
 //----------------------------------------------------------------------------
+void BlendTransformController::SetController0 (TransformController *ctrl0)
+{
+	SetController01(ctrl0, mController1);
+}
+//----------------------------------------------------------------------------
+void BlendTransformController::SetController1 (TransformController *ctrl1)
+{
+	SetController01(mController0, ctrl1);
+}
+//----------------------------------------------------------------------------
+void BlendTransformController::SetController01 (TransformController *ctrl0,
+	TransformController *ctrl1)
+{
+	mController0 = ctrl0;
+	mController1 = ctrl1;
+
+	if (mController0)
+		mController0->SetControlledable(GetControlledable());
+
+	if (mController1)
+		mController1->SetControlledable(GetControlledable());
+}
+//----------------------------------------------------------------------------
+void BlendTransformController::PushController (TransformController *ctrl)
+{
+	if (!mController0)
+	{
+		SetController0(ctrl);
+	}
+	else if (!mController1)
+	{
+		SetController1(mController1);
+	}
+	else
+	{
+		SetController0(mController1);
+		SetController1(ctrl);
+	}
+}
+//----------------------------------------------------------------------------
 void BlendTransformController::SetControlledable (Controlledable* object)
 {
 	TransformController::SetControlledable(object);
 
-	mController0->SetControlledable(object);
-	mController1->SetControlledable(object);
+	if (mController0)
+		mController0->SetControlledable(object);
+
+	if (mController1)
+		mController1->SetControlledable(object);
 }
 //----------------------------------------------------------------------------
 
@@ -182,6 +239,7 @@ void BlendTransformController::Load (InStream& source)
 	PX2_BEGIN_DEBUG_STREAM_LOAD(source);
 
 	TransformController::Load(source);
+	PX2_VERSION_LOAD(source);
 
 	source.ReadPointer(mController0);
 	source.ReadPointer(mController1);
@@ -222,6 +280,7 @@ void BlendTransformController::Save (OutStream& target) const
 	PX2_BEGIN_DEBUG_STREAM_SAVE(target);
 
 	TransformController::Save(target);
+	PX2_VERSION_SAVE(target);
 
 	target.WritePointer(mController0);
 	target.WritePointer(mController1);
@@ -236,6 +295,8 @@ void BlendTransformController::Save (OutStream& target) const
 int BlendTransformController::GetStreamingSize (Stream &stream) const
 {
 	int size = TransformController::GetStreamingSize(stream);
+	size += PX2_VERSION_SIZE(mVersion);
+
 	size += PX2_POINTERSIZE(mController0);
 	size += PX2_POINTERSIZE(mController1);
 	size += sizeof(mWeight);

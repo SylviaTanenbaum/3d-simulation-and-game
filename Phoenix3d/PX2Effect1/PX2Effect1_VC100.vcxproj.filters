@@ -99,6 +99,12 @@
     <ClInclude Include="PX2EffectModelController.hpp">
       <Filter>EffectModel</Filter>
     </ClInclude>
+    <ClInclude Include="PX2EffectModelNode.hpp">
+      <Filter>EffectNode</Filter>
+    </ClInclude>
+    <ClInclude Include="PX2EffectModelNodeController.hpp">
+      <Filter>EffectNode</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="EffectNode">
@@ -229,6 +235,12 @@
     <ClCompile Include="PX2EffectModelController.cpp">
       <Filter>EffectModel</Filter>
     </ClCompile>
+    <ClCompile Include="PX2EffectModelNode.cpp">
+      <Filter>EffectNode</Filter>
+    </ClCompile>
+    <ClCompile Include="PX2EffectModelNodeController.cpp">
+      <Filter>EffectNode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="PX2EffectModule.inl">
@@ -290,6 +302,9 @@
     </None>
     <None Include="PX2EffectModelController.inl">
       <Filter>EffectModel</Filter>
+    </None>
+    <None Include="PX2EffectModelNode.inl">
+      <Filter>EffectNode</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -29,6 +29,7 @@ namespace PX2
 		{
 			MT_SPHERE,
 			MT_CYLINDEROPEN,
+			MT_MODEL,
 			MT_MAX_TYPE
 		};
 		void SetModelType (ModelType modelType);
@@ -52,6 +53,9 @@ namespace PX2
 		void SetHeightAlphaType (HeightAlphaType type);
 		HeightAlphaType GetHeightAlphaType () const;
 
+		void SetModelFilename (const std::string &filename);
+		const std::string &GetModelFilename () const;
+
 		virtual const std::vector<std::string> &GetAllModuleNames_EA () const;
 		virtual const std::vector<std::string> &GetAllModuleNames_EO () const;
 
@@ -71,6 +75,8 @@ public_internal:
 
 		std::vector<Float2> mInitUVs;
 		bool mIsNeedReGenMesh;
+
+		std::string mModelFilename;
 	};
 
 	PX2_REGISTER_STREAM(EffectModel);

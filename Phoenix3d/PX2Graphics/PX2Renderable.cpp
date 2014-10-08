@@ -17,7 +17,7 @@
 #include "PX2ShineDiffuseConstant.hpp"
 using namespace PX2;
 
-PX2_IMPLEMENT_RTTI_V(PX2, Movable, Renderable, 5);
+PX2_IMPLEMENT_RTTI_V(PX2, Movable, Renderable, 6);
 PX2_IMPLEMENT_STREAM(Renderable);
 PX2_IMPLEMENT_ABSTRACT_FACTORY(Renderable);
 
@@ -32,6 +32,7 @@ mVBuffer(0),
 mIBuffer(0),
 mMaterial(0),
 mSortIndex(0),
+mSubLayer(0),
 mIsUseShareBuffers(false),
 mDBObject_V(0),
 mDBObject_I(0),
@@ -63,6 +64,7 @@ mVBuffer(vbuffer),
 mIBuffer(ibuffer),
 mMaterial(0),
 mSortIndex(0),
+mSubLayer(0),
 mIsUseShareBuffers(false),
 mDBObject_V(0),
 mDBObject_I(0),
@@ -93,6 +95,7 @@ Renderable::~Renderable ()
 void Renderable::SetRenderLayer (RenderLayer layer, int sublayer)
 {
 	mLayer = layer;
+	mSubLayer = sublayer;
 	//mSortIndex = (layer<<16)|(mSortIndex&0xff00ffff);
 	mSortIndex = (layer<<24)|(sublayer<<16)|(mSortIndex&0xffff);
 }
@@ -156,15 +159,6 @@ Light *Renderable::GetLight (int i)
 //----------------------------------------------------------------------------
 void Renderable::SetLightTexture (Texture2D *tex)
 {
-	if (tex)
-	{
-		mLightTexPath = tex->GetResourcePath();
-	}
-	else
-	{
-		mLightTexPath = "";
-	}
-
 	MaterialInstance *mi = GetMaterialInstance();
 	if (mi)
 	{
@@ -184,7 +178,7 @@ void Renderable::SetLightTexture (Texture2D *tex)
 	}
 }
 //----------------------------------------------------------------------------
-void Renderable::SetUseLightTexture (bool use)
+void Renderable::SetUseLightTexture (bool use, Texture2D *lightTex)
 {
 	if (!IsBakeTarget())
 		return;
@@ -201,21 +195,26 @@ void Renderable::SetUseLightTexture (bool use)
 
 	if (use)
 	{
-		if (!mNormalTexPath.empty() && !mLightTexPath.empty())
+		if (!mNormalTexPath.empty() && lightTex)
 		{
 			Texture2D *normalTex = DynamicCast<Texture2D>(ShaderParameters::msTextureUserLoadFun(
 				mNormalTexPath.c_str()));
-
-			Texture2D *lightTex = DynamicCast<Texture2D>(ShaderParameters::msTextureUserLoadFun(
-				mLightTexPath.c_str()));
 
 			if (normalTex && lightTex)
 			{
 				mNormalMaterialInstance = GetMaterialInstance();
 
-				MaterialInstance *mi = Texture2MulMaterial::CreateUniqueInstance(
-					normalTex, Shader::SF_LINEAR, Shader::SC_CLAMP, Shader::SC_CLAMP,
-					lightTex, Shader::SF_LINEAR, Shader::SC_CLAMP, Shader::SC_CLAMP);
+				Texture2MulMaterialPtr mtl = new0 Texture2MulMaterial();
+				mtl->GetCullProperty(0, 0)->Enabled = mNormalMaterialInstance->GetMaterial()->GetCullProperty(0, 0)->Enabled;
+
+				if (Texture::TF_A8R8G8B8 == normalTex->GetFormat())
+				{
+					mtl->GetAlphaProperty(0, 0)->CompareEnabled = true;
+					mtl->GetAlphaProperty(0, 0)->Reference = 0.33f;
+					mtl->GetAlphaProperty(0, 0)->Compare = AlphaProperty::CM_GEQUAL;
+				}
+
+				MaterialInstance *mi = mtl->CreateInstance(normalTex, lightTex);
 				SetMaterialInstance(mi);
 
 				mIsUseLightTexture = use;
@@ -583,6 +582,7 @@ void Renderable::RegistProperties ()
 	renderLayers.push_back("RL_UI_RANGE");
 	renderLayers.push_back("RL_UI_RANGE_ELEMENT");
 	AddPropertyEnum("RenderLayer", (int)GetRenderLayer(), renderLayers);
+	AddProperty("SubLayer", PT_INT, GetSubLayer());
 
 	AddProperty("SortIndex", PT_INT, GetSortIndex(), false);
 	AddProperty("NumLights", PT_INT, GetNumLights(), false);
@@ -608,7 +608,11 @@ void Renderable::OnPropertyChanged (const PropertyObject &obj)
 
 	if ("RenderLayer" == obj.Name)
 	{
-		SetRenderLayer((RenderLayer)PX2_ANY_AS(obj.Data, int));
+		SetRenderLayer((RenderLayer)PX2_ANY_AS(obj.Data, int), mSubLayer);
+	}
+	else if ("SubLayer" == obj.Name)
+	{
+		SetRenderLayer(mLayer, PX2_ANY_AS(obj.Data, int));
 	}
 	else if ("IsBakeObject" == obj.Name)
 	{
@@ -668,6 +672,7 @@ mVBuffer(0),
 mIBuffer(0),
 mMaterial(0),
 mSortIndex(0),
+mSubLayer(0),
 mIsUseShareBuffers(false),
 mDBObject_V(0),
 mDBObject_I(0),
@@ -729,6 +734,10 @@ void Renderable::Load (InStream& source)
 		source.ReadBool(mIsBackObject);
 		source.ReadBool(mIsBackTarget);
 		source.ReadPointer(mNormalMaterialInstance);
+	}
+	if (6 <= readedVersion)
+	{
+		source.Read(mSubLayer);
 	}
 
 	PX2_END_DEBUG_STREAM_LOAD(Renderable, source);
@@ -799,6 +808,7 @@ void Renderable::Save (OutStream& target) const
 	target.WriteBool(mIsBackObject);
 	target.WriteBool(mIsBackTarget);
 	target.WritePointer(mNormalMaterialInstance);
+	target.Write(mSubLayer);
 
 	PX2_END_DEBUG_STREAM_SAVE(Renderable, target);
 }
@@ -846,6 +856,10 @@ int Renderable::GetStreamingSize (Stream &stream) const
 			size += PX2_BOOLSIZE(mIsBackTarget);
 			size += PX2_POINTERSIZE(mNormalMaterialInstance);
 		}
+		if (6 <= readedVersion)
+		{
+			size += sizeof(mSubLayer);
+		}
 	}
 	else
 	{
@@ -861,6 +875,7 @@ int Renderable::GetStreamingSize (Stream &stream) const
 		size += PX2_BOOLSIZE(mIsBackObject);
 		size += PX2_BOOLSIZE(mIsBackTarget);
 		size += PX2_BOOLSIZE(mNormalMaterialInstance);
+		size += sizeof(mSubLayer);
 	}
 
 	return size;

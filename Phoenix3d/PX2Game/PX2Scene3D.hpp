@@ -48,12 +48,7 @@ namespace PX2
 		void SetUseLightTexture (bool use);
 		bool IsUseLightTexture () const;
 
-		void ConvertToLightMtl ();
-
 	protected:
-		void _SetUseLightTexture (Movable *mov, bool use);
-		void _ConvertLightMtl (Movable *mov);
-
 		TerrainActorPtr mTerrainActor;
 		PX2::AmbientRigionActorPtr mDefaultARActor;
 		BakeSizeType mBakeSizeType;

@@ -118,7 +118,6 @@ namespace PX2
 			RL_BACKGROUND = 0,
 			RL_SKY,
 			RL_TERRAIN,
-			//RL_DECAL,
 			RL_SCENE,
 			RL_UI,
 			RL_UI_RANGE,
@@ -127,6 +126,7 @@ namespace PX2
 		};
 		void SetRenderLayer (RenderLayer layer, int sublayer=0);
 		RenderLayer GetRenderLayer () const;
+		int GetSubLayer () const;
 
 		unsigned int GetSortIndex () const;
 
@@ -175,7 +175,7 @@ namespace PX2
 		void SetBakeSizeType (BakeSizeType type);
 		BakeSizeType GetBakeSizeType () const;
 		
-		void SetUseLightTexture (bool light);
+		void SetUseLightTexture (bool light, Texture2D *lightTex);
 		bool IsUseLightTexture () const;
 
 		void ConvertLightMtl ();
@@ -265,6 +265,7 @@ public_internal:
 		MaterialInstancePtr mMaterial;
 
 		RenderLayer mLayer;
+		int mSubLayer;
 
 		// 当前对象受影响的灯光
 		/*

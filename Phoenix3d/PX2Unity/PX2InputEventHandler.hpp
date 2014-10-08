@@ -20,6 +20,9 @@ namespace PX2
 		InputEventHandler ();
 		virtual ~InputEventHandler ();
 
+		void SetPriority (int priority);
+		int GetPriority () const;
+
 		void AddAcceptRange (const Rectf &ar);
 		bool HasAcceptRange (const Rectf &ar);
 		void RemoveAcceptRange (const Rectf &ar);
@@ -38,6 +41,7 @@ namespace PX2
 	protected:
 		bool IsValuable (const InputEventData &data);
 
+		int mPriority;
 		InputRange mInputRange;
 	};
 

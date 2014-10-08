@@ -28,7 +28,6 @@ namespace PX2
 		AnimationPtr TheAnim;
 		float BlendTime;
 		float BlendWeight;
-		NodePtr AnimNode;
 
 	public_internal:
 		Character *TheCharacter;

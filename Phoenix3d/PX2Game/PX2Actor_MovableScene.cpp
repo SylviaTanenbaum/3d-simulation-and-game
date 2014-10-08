@@ -6,6 +6,7 @@
 
 #include "PX2Actor.hpp"
 #include "PX2Scene.hpp"
+#include "PX2Scene3D.hpp"
 #include "PX2ResourceManager.hpp"
 using namespace PX2;
 
@@ -67,6 +68,9 @@ void Actor::SetMovable (Movable *movable)
 			}
 		}
 	}
+
+	SetBakeObject(IsBakeObject());
+	SetBakeTarget(IsBakeTarget());
 }
 //----------------------------------------------------------------------------
 void Actor::ShowHelpMovable (bool show)

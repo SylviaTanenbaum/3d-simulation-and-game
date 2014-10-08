@@ -135,11 +135,6 @@ inline Animation *Character::GetCurPlayingAnim ()
 	return mCurAnim;
 }
 //----------------------------------------------------------------------------
-inline void Character::SetModelTagName (const std::string &modelTagName)
-{
-	mModelTagName = modelTagName;
-}
-//----------------------------------------------------------------------------
 inline const std::string &Character::GetModelTagName () const
 {
 	return mModelTagName;
@@ -160,9 +155,9 @@ inline Movable *Character::GetModelAnimMovable ()
 	return mModelAnimMovable;
 }
 //----------------------------------------------------------------------------
-inline std::list<SkinControllerPtr> &Character::GetSkinCtrls ()
+inline std::map<FString, BlendTransformController*> &Character::GetBTCMap ()
 {
-	return mSkinCtrls;
+	return mBTCMap;
 }
 //----------------------------------------------------------------------------
 inline Skill *Character::GetDefSkill ()

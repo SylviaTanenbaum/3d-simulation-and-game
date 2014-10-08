@@ -25,3 +25,8 @@ inline EffectModel::HeightAlphaType EffectModel::GetHeightAlphaType () const
 	return mHeightAlphaType;
 }
 //----------------------------------------------------------------------------
+inline const std::string &EffectModel::GetModelFilename () const
+{
+	return mModelFilename;
+}
+//----------------------------------------------------------------------------

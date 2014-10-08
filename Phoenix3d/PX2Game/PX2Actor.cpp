@@ -14,7 +14,7 @@
 #include "PX2ResourceManager.hpp"
 using namespace PX2;
 
-PX2_IMPLEMENT_RTTI_V(PX2, Gameable, Actor, 1);
+PX2_IMPLEMENT_RTTI_V(PX2, Gameable, Actor, 2);
 PX2_IMPLEMENT_STREAM(Actor);
 PX2_IMPLEMENT_FACTORY(Actor);
 
@@ -44,7 +44,7 @@ mMass(1.0f),
 mIsSmoothOn(true),
 mHeadingSmoother(0),
 mIsBakeObject(true),
-mIsBakeTarget(false)
+mIsBakeTarget(true)
 {
 	PX2_INIT_PM_F(MaxSpeed);
 
@@ -69,6 +69,15 @@ void Actor::Update (double appSeconds, double elapsedSeconds)
 {
 	if(IsGridMoveOn())
 	{
+		if ((int)mStopSpeedTags.size() > 0)
+		{
+			StopSpeed(true);
+		}
+		else
+		{
+			StopSpeed(false);
+		}
+
 		if (mIsStopSpeed)
 		{
 			mGridMoveBehavior->SetSpeed(0.0f);
@@ -141,6 +150,37 @@ void Actor::_SetBakeObject (Movable *mov, bool bakeObject)
 			if (mov)
 			{
 				_SetBakeObject(mov, bakeObject);
+			}
+		}
+	}
+}
+//----------------------------------------------------------------------------
+void Actor::ClearBakeTextures ()
+{
+	mBakeTextures.clear();
+}
+//----------------------------------------------------------------------------
+void Actor::AddBakeTxture (const std::string &name, const std::string &bakeTexture)
+{
+	mBakeTextures[name] = bakeTexture;
+}
+//----------------------------------------------------------------------------
+void Actor::SetUseLightTexture (bool use)
+{
+	if (IsBakeTarget())
+	{
+		std::map<std::string, std::string>::iterator it = mBakeTextures.begin();
+		for (; it!=mBakeTextures.end(); it++)
+		{
+			const std::string &filename = it->first;
+			const std::string &texFilename = it->second;
+
+			TriMesh *mesh = DynamicCast<TriMesh>(mMovable->GetObjectByName(filename));
+			Texture2D *tex2D = DynamicCast<Texture2D>(PX2_RM.BlockLoad(texFilename));
+			if (mesh && tex2D)
+			{
+				mesh->SetLightTexture(tex2D);
+				mesh->SetUseLightTexture(use, tex2D);
 			}
 		}
 	}
@@ -372,7 +412,7 @@ Gameable(value),
 	mIsSmoothOn(true),
 	mHeadingSmoother(0),
 	mIsBakeObject(true),
-	mIsBakeTarget(false)
+	mIsBakeTarget(true)
 {
 	SetID(Scene::GetNextID());
 
@@ -427,6 +467,21 @@ void Actor::Load (InStream& source)
 	{
 		source.ReadBool(mIsBakeObject);
 		source.ReadBool(mIsBakeTarget);
+	}
+
+	if (2 <= readedVersion)
+	{
+		int numLightTex = 0;
+		source.Read(numLightTex);
+		for (int i=0; i<numLightTex; i++)
+		{
+			std::string meshName;
+			std::string lightTexFilename;
+			source.ReadString(meshName);
+			source.ReadString(lightTexFilename);
+
+			mBakeTextures[meshName] = lightTexFilename;
+		}
 	}
 
 	PX2_END_DEBUG_STREAM_LOAD(Actor, source);
@@ -504,6 +559,15 @@ void Actor::Save (OutStream& target) const
 	target.WriteBool(mIsBakeObject);
 	target.WriteBool(mIsBakeTarget);
 
+	int numBakeTexs = (int)mBakeTextures.size();
+	target.Write(numBakeTexs);
+	std::map<std::string, std::string>::const_iterator it = mBakeTextures.begin();
+	for (; it!=mBakeTextures.end(); it++)
+	{
+		target.WriteString(it->first);
+		target.WriteString(it->second);
+	}
+
 	PX2_END_DEBUG_STREAM_SAVE(Actor, target);
 }
 //----------------------------------------------------------------------------
@@ -540,11 +604,32 @@ int Actor::GetStreamingSize (Stream &stream) const
 			size += PX2_BOOLSIZE(mIsBakeObject);
 			size += PX2_BOOLSIZE(mIsBakeTarget);
 		}
+
+		if (2 <= readedVersion)
+		{
+			int numBakeTexs = (int)mBakeTextures.size();
+			size += sizeof(numBakeTexs);
+			std::map<std::string, std::string>::const_iterator it = mBakeTextures.begin();
+			for (; it!=mBakeTextures.end(); it++)
+			{
+				size += PX2_STRINGSIZE(it->first);
+				size += PX2_STRINGSIZE(it->second);
+			}
+		}
 	}
 	else
 	{
 		size += PX2_BOOLSIZE(mIsBakeObject);
 		size += PX2_BOOLSIZE(mIsBakeTarget);
+
+		int numBakeTexs = (int)mBakeTextures.size();
+		size += sizeof(numBakeTexs);
+		std::map<std::string, std::string>::const_iterator it = mBakeTextures.begin();
+		for (; it!=mBakeTextures.end(); it++)
+		{
+			size += PX2_STRINGSIZE(it->first);
+			size += PX2_STRINGSIZE(it->second);
+		}
 	}
 
 	return size;

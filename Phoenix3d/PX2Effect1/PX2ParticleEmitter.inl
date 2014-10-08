@@ -76,6 +76,46 @@ inline float ParticleEmitter::GetEmitRotateSpeed () const
 	return mEmitRotateSpeed;
 }
 //----------------------------------------------------------------------------
+inline void ParticleEmitter::SetCollisionType (CollisionType type)
+{
+	mCollisionType = type;
+}
+//----------------------------------------------------------------------------
+inline ParticleEmitter::CollisionType ParticleEmitter::GetCollisionType () const
+{
+	return mCollisionType;
+}
+//----------------------------------------------------------------------------
+inline void ParticleEmitter::SetCollisionOption (CollisionOption type)
+{
+	mCollisionOption = type;
+}
+//----------------------------------------------------------------------------
+inline ParticleEmitter::CollisionOption ParticleEmitter::GetCollisionOption () const
+{
+	return mCollisionOption;
+}
+//----------------------------------------------------------------------------
+inline void ParticleEmitter::SetCollisionFaceHeight (float height)
+{
+	mCollisionHeight = height;
+}
+//----------------------------------------------------------------------------
+inline float ParticleEmitter::GetCollisionFaceHeight () const
+{
+	return mCollisionHeight;
+}
+//----------------------------------------------------------------------------
+inline void ParticleEmitter::SetCollisionSpeedPercent (float percent)
+{
+	mCollisionSpeedPercent = percent;
+}
+//----------------------------------------------------------------------------
+inline float ParticleEmitter::GetCollisionSpeedPercent () const
+{
+	return mCollisionSpeedPercent;
+}
+//----------------------------------------------------------------------------
 inline void ParticleEmitter::SetModelFilename (const std::string &filename)
 {
 	mModelFilename = filename;
@@ -130,6 +170,16 @@ inline void ParticleEmitter::SetEmitSpeed (float speed)
 inline float ParticleEmitter::GetEmitSpeed () const
 {
 	return mEmitSpeed;
+}
+//----------------------------------------------------------------------------
+inline void ParticleEmitter::SetObstruct (const AVector &obs)
+{
+	mObstruct = obs;
+}
+//----------------------------------------------------------------------------
+inline const AVector &ParticleEmitter::GetObstruct () const
+{
+	return mObstruct;
 }
 //----------------------------------------------------------------------------
 inline void ParticleEmitter::SetEmitAccelerateDir (const AVector &dir)

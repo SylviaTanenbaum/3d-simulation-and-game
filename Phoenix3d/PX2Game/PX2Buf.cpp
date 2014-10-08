@@ -63,6 +63,8 @@ void Buf::Update (double appSeconds, double elapsedSeconds)
 
 	mTimeAdded += (float)elapsedSeconds;
 
+	Character *chara = GetCharacter();
+
 	Actor *centerActor = 0;
 	Character *centerChar = 0;
 	if ((mIsUseRange || mIsUseCenterIDAlive) && mCenterCharacterID>0)

@@ -155,6 +155,11 @@ inline Renderable::RenderLayer Renderable::GetRenderLayer () const
 	return mLayer;
 }
 //----------------------------------------------------------------------------
+inline int Renderable::GetSubLayer () const
+{
+	return mSubLayer;
+}
+//----------------------------------------------------------------------------
 inline unsigned int Renderable::GetSortIndex () const
 {
 	return mSortIndex;

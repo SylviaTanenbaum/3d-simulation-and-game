@@ -27,8 +27,6 @@ namespace PX2
 
 		virtual void Update (double appSeconds, double elapsedSeconds);
 
-		virtual void OnMaxSpeedModified();
-
 		Node *GetActorNode ();
 		Node *GetAnimNode ();
 

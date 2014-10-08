@@ -40,6 +40,10 @@ bool ParticleObject::Update (Effectable *able, float elapsedTime)
 	ParticleEmitter::RotateAxisType rotateAxisType = pe->GetRotateAxisType();
 	const APoint &attactPoint = pe->GetEmitAttactPoint();
 	const AVector &attactStrength = pe->GetEmitAttackStrength();
+	ParticleEmitter::CollisionType ct = pe->GetCollisionType();
+	ParticleEmitter::CollisionOption co = pe->GetCollisionOption();
+	float collisionHeight = pe->GetCollisionFaceHeight();
+	float collisionSpeedPercent = pe->GetCollisionSpeedPercent();
 
 	APoint worldAttactPoint = attactPoint;
 	if (!pe->IsLocal())
@@ -109,7 +113,32 @@ bool ParticleObject::Update (Effectable *able, float elapsedTime)
 		}
 	}
 
-	Pos				+= speedDir * elapsedTime;
+	if (ParticleEmitter::CT_FACE_HEIGHTUP == ct)
+	{
+		APoint toPos = Pos;
+		toPos += speedDir * elapsedTime;
+		if (toPos.Z() < collisionHeight)
+		{
+			if (ParticleEmitter::CO_REFLECT == co)
+			{
+				toPos.Z() = collisionHeight;
+				speedDir.Z() *= -1.0f;
+
+				speedDir *= collisionSpeedPercent;
+			}
+			else
+			{
+				toPos.Z() = collisionHeight;
+				Age = Life;
+			}
+		}
+		Pos = toPos;
+	}
+	else
+	{
+		Pos	+= speedDir * elapsedTime;
+	}
+
 	float spLength	= speedDir.Normalize();
 	Speed			= spLength;
 	SpeedDir		= speedDir;

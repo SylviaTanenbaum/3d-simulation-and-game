@@ -124,7 +124,7 @@ void Character::Die ()
 	mIsDead = true;
 
 	SetAimTarget(0);
-	StopSpeed(true);
+	AddStopSpeedTag("Die");
 
 	Event *ent = GameEventSpace::CreateEventX(GameEventSpace::CharacterDie);
 	ent->SetData<Character*>(this);

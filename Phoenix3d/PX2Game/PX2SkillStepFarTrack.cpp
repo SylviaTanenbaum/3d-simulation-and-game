@@ -83,7 +83,7 @@ void SkillStepFarTrack::OnEnter (SkillInstance *instance)
 	Character *character = skill->GetCharacter();
 	Scene *scene = character->GetScene();
 
-	std::string anchorName = "Center";
+	std::string anchorName = "center";
 	if (!mSelfEffectAnchor.empty())
 		anchorName = mSelfEffectAnchor;
 
@@ -134,7 +134,8 @@ void SkillStepFarTrack::OnEnter (SkillInstance *instance)
 			AVector dir = targetPos - worldPos;
 			dir.Normalize();
 
-			APoint tarPos = worldPos + dir * mSpeed * mTrackTime; 
+			APoint tarPos = worldPos + dir * mSpeed * mTrackTime;
+			tarPos.Z() += 1.5f; 
 
 			skillActor->SetTargetPos(tarPos);
 		}
@@ -185,7 +186,8 @@ void SkillStepFarTrack::OnEnter (SkillInstance *instance)
 
 				APoint tarPos = worldPos + dir * mSpeed * mTrackTime; 
 
-				skillActor->SetTargetPos(tarPos);
+				tarPos.Z() += 1.5f;
+				skillActor->SetTargetPos(tarPos); 
 			}
 
 			skillActor->SetDegree(GetDegree());

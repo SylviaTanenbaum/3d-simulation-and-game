@@ -20,8 +20,6 @@ SkinController::SkinController (int numVertices, int numBones)
 :
 mNumVertices(numVertices),
 mNumBones(numBones),
-mIsUseBlend(false),
-mBlendWeight(0.0f),
 mOriginPoses(0),
 mGPUMatrixs(0),
 mIsUseCPU(false)
@@ -30,11 +28,6 @@ mIsUseCPU(false)
 	mWeights = new2<float>(mNumBones, mNumVertices);
 	mOffsets = new2<APoint>(mNumBones, mNumVertices);
 	mTMMatrixs = new1<HMatrix>(mNumBones);
-
-	mBonesName = new1<std::string>(mNumBones);
-	mBones_Run = new1<NodePtr>(mNumBones);
-	mBones_Run_Last = new1<NodePtr>(mNumBones);
-
 	mGPUMatrixs = new1<HMatrix>(mNumBones);
 }
 //----------------------------------------------------------------------------
@@ -44,10 +37,6 @@ SkinController::~SkinController ()
 	delete2(mWeights);
 	delete2(mOffsets);
 	delete1(mTMMatrixs);
-
-	delete1(mBonesName);
-	delete1(mBones_Run);
-	delete1(mBones_Run_Last);
 
 	delete1(mOriginPoses);
 	delete1(mGPUMatrixs);
@@ -96,22 +85,9 @@ bool SkinController::Update (double applicationTime)
 					APoint offset = mOffsets[vertex][bone];
 					APoint worldOffset;
 
-					if (mIsUseBlend)
-					{
-						worldOffset = mBones_Run_Last[bone]->WorldTransform*offset*(1.0f - mBlendWeight)
-							+ mBones_Run[bone]->WorldTransform*offset*mBlendWeight;
-					}
-					else
-					{
-						worldOffset = mBones_Run[bone]->WorldTransform*offset;
-					}
+					worldOffset = mBones[bone]->WorldTransform*offset;
 
 					position += weight*worldOffset;
-
-					//APoint worldOffset;
-					//HMatrix boneMat = mBones_Run[bone]->WorldTransform.Matrix();
-					//worldOffset = boneMat * (mTMMatrixs[bone] * mOriginPoses[vertex]);
-					//position += weight*worldOffset;
 				}
 			}
 			vba.Position<Float3>(vertex) = position;
@@ -124,22 +100,10 @@ bool SkinController::Update (double applicationTime)
 	{
 		for (int bone = 0; bone < mNumBones; ++bone)
 		{
-			if (mIsUseBlend)
+			if (mBones[bone])
 			{
-				if ( mBones_Run_Last[bone] && mBones_Run[bone])
-				{
-					const HMatrix &lastBoneMat = mBones_Run_Last[bone]->WorldTransform.Matrix();
-					const HMatrix &boneMat = mBones_Run[bone]->WorldTransform.Matrix();
-					mGPUMatrixs[bone] = (lastBoneMat*(1.0f-mBlendWeight) + boneMat*mBlendWeight) * mTMMatrixs[bone];
-				}
-			}
-			else
-			{
-				if (mBones_Run[bone])
-				{
-					const HMatrix &boneMat = mBones_Run[bone]->WorldTransform.Matrix();
-					mGPUMatrixs[bone] = boneMat * mTMMatrixs[bone];
-				}
+				const HMatrix &boneMat = mBones[bone]->WorldTransform.Matrix();
+				mGPUMatrixs[bone] = boneMat * mTMMatrixs[bone];
 			}
 		}
 	}
@@ -147,25 +111,6 @@ bool SkinController::Update (double applicationTime)
 	return true;
 }
 //----------------------------------------------------------------------------
-void SkinController::UpdateBlender (Node **lastNodes, Node **curNodes,
-	float weight)
-{
-	for (int i=0; i<GetNumBones(); i++)
-	{
-		if (lastNodes)
-		{
-			mIsUseBlend = true;
-			mBones_Run_Last[i] = lastNodes[i];
-		}
-		else
-		{
-			mIsUseBlend = false;
-		}
-
-		mBones_Run[i] = curNodes[i];
-		mBlendWeight = weight;
-	}
-}
 
 //----------------------------------------------------------------------------
 // Property
@@ -198,8 +143,6 @@ mNumBones(0),
 mBones(0),
 mWeights(0),
 mOffsets(0),
-mIsUseBlend(false),
-mBlendWeight(0.0f),
 mOriginPoses(0),
 mGPUMatrixs(0),
 mIsUseCPU(false)
@@ -240,21 +183,7 @@ void SkinController::PostLink ()
 {
 	Controller::PostLink();
 
-	mBonesName = new1<std::string>(mNumBones);
-	mBones_Run = new1<NodePtr>(mNumBones);
-	mBones_Run_Last = new1<NodePtr>(mNumBones);
 	mGPUMatrixs = new1<HMatrix>(mNumBones);
-
-	for (int i=0; i<mNumBones; i++)
-	{
-		mBones_Run[i] = mBones[i];
-	}
-
-	for (int i=0; i<mNumBones; i++)
-	{
-		Node *bone = mBones[i];
-		mBonesName[i] = bone->GetName();
-	}
 }
 //----------------------------------------------------------------------------
 bool SkinController::Register (OutStream& target) const

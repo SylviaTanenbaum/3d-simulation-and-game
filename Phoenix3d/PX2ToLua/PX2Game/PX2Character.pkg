@@ -81,8 +81,6 @@
 		void SetModelTagName (const std::string &modelTagName);
 		const std::string &GetModelTagName () const;
 
-		std::list<SkinControllerPtr> &GetSkinCtrls ();
-
 		// items
 	public:
 		bool AddItem (Item *item);

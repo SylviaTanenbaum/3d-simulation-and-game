@@ -262,6 +262,7 @@ void ParticleEmitterController::OnNewAEffectObject (EffectObject *obj)
 	pObj->AccelerateDirInit = pObj->AccelerateDir;
 	pObj->Accelerate = emitter->GetEmitAccelerate();
 	pObj->AccelerateInit = pObj->Accelerate;
+	pObj->Obstruct = emitter->GetObstruct();
 
 	if (!emitter->IsLocal())
 	{

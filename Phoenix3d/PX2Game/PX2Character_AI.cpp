@@ -15,12 +15,12 @@ void Character::Freeze (bool enable)
 
 	if (mIsFreezed)
 	{
-		StopSpeed(true);
+		//StopSpeed(true);
 		StopCurAnim();
 	}
 	else
 	{
-		StopSpeed(false);
+		//StopSpeed(false);
 		PlayCurAnim();
 	}
 }

@@ -8,7 +8,7 @@
 #include "PX2GraphicsRoot.hpp"
 using namespace PX2;
 
-PX2_IMPLEMENT_RTTI(PX2, TriggerActor, AmbientRegionActor);
+PX2_IMPLEMENT_RTTI_V(PX2, TriggerActor, AmbientRegionActor, 5);
 PX2_IMPLEMENT_STREAM(AmbientRegionActor);
 PX2_IMPLEMENT_FACTORY(AmbientRegionActor);
 
@@ -28,6 +28,19 @@ AmbientRegionActor::AmbientRegionActor ()
 	mLight->Ambient = Float4(0.2f, 0.2f, 0.2f, 1.0f);
 	mLight->Diffuse = Float4(1.0f, 1.0f, 1.0f, 1.0f);
 	mLight->Specular = Float4(0.5f, 0.5f, 0.5f, 1.0f);
+
+	mFogParam = Float2(60.0f, 240.0f);
+	mFogColor = Float3::WHITE;
+
+	mBakeShadowAngle = 0.0f; 
+
+	mBakeSkyLightColor = Float3::WHITE;
+
+	mAmbientScale = 1.0f;
+	mDiffuseScale = 1.0f;
+	mSpecularScale = 1.0f;
+
+	mShineParam = Float2(1.0f, 1.0f);
 }
 //----------------------------------------------------------------------------
 AmbientRegionActor::~AmbientRegionActor ()
@@ -155,27 +168,73 @@ void AmbientRegionActor::RegistProperties ()
 
 	AddPropertyClass("AmbientRegionActor");
 
-	AddProperty("AmbientColor", Object::PT_COLOR3FLOAT3, mAmbientColor);
+	AddProperty("GI_SkyLightColor_Bake", Object::PT_COLOR3FLOAT3, mBakeSkyLightColor);
+
+	AddProperty("AmbientColor_Bake", Object::PT_COLOR3FLOAT3, mAmbientColor);
+	AddProperty("AmbientColor_BakeScale", Object::PT_FLOAT, mAmbientScale);
+
 	AddProperty("LightDiffColor_Bake", Object::PT_COLOR3FLOAT3, mDirLightDiffColor);
-	//AddProperty("LightSpecColor", Object::PT_COLOR3FLOAT3, mLightSpecColor);
+	AddProperty("LightDiffColor_BakeScale", Object::PT_FLOAT, mDiffuseScale);
+
+	AddProperty("LightSpecColor_Bake", Object::PT_COLOR3FLOAT3, mLightSpecColor);
+	AddProperty("LightSpecColor_BakeScale", Object::PT_FLOAT, mSpecularScale);
+	
 	//AddProperty("LightIntensity", Object::PT_FLOAT, mLightIntensity);
+	AddProperty("ShadowAngle_Bake", Object::PT_FLOAT, mBakeShadowAngle);
 	AddProperty("HorAngle", Object::PT_FLOAT, mHorAngle);
 	AddProperty("VerAngle", Object::PT_FLOAT, mVerAngle);
+	
+	AddProperty("FogParam", Object::PT_FLOAT2, mFogParam);
+	AddProperty("FogColor", Object::PT_COLOR3FLOAT3, mFogColor);
+
+	AddProperty("ShineParam", Object::PT_FLOAT2, mShineParam);
 }
 //----------------------------------------------------------------------------
 void AmbientRegionActor::OnPropertyChanged (const PropertyObject &obj) 
 { 
 	TriggerActor::OnPropertyChanged(obj);
 
-	if ("AmbientColor" == obj.Name)
+	if ("GI_SkyLightColor_Bake" == obj.Name)
+	{
+		SetGISkyLightColor(PX2_ANY_AS(obj.Data, Float3));
+	}
+	if ("AmbientColor_Bake" == obj.Name)
 	{
 		SetAmbientColor(PX2_ANY_AS(obj.Data, Float3));
+	}
+	else if ("AmbientColor_BakeScale" == obj.Name)
+	{
+		SetAmbientScale(PX2_ANY_AS(obj.Data, float));
 	}
 	else if ("LightDiffColor_Bake" == obj.Name)
 	{
 		SetLightDiffColor(PX2_ANY_AS(obj.Data, Float3));
 	}
-	else if ("LightSpecColor" == obj.Name)
+	else if ("LightDiffColor_BakeScale" == obj.Name)
+	{
+		SetDiffuseScale(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("AmbientColor_BakeScale" == obj.Name)
+	{
+		SetAmbientScale(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("LightSpecColor_BakeScale" == obj.Name)
+	{
+		SetSpecularScale(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("LightDiffColor_BakeScale" == obj.Name)
+	{
+		SetDiffuseScale(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("LightSpecColor_BakeScale" == obj.Name)
+	{
+		SetSpecularScale(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("ShadowAngle_Bake" == obj.Name)
+	{
+		SetBakeShadowAngle(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("LightSpecColor_Bake" == obj.Name)
 	{
 		SetLightSpecColor(PX2_ANY_AS(obj.Data, Float3));
 	}
@@ -190,6 +249,24 @@ void AmbientRegionActor::OnPropertyChanged (const PropertyObject &obj)
 	else if ("VerAngle" == obj.Name)
 	{
 		SetVerAngle(PX2_ANY_AS(obj.Data, float));
+	}
+	else if ("FogParam" == obj.Name)
+	{
+		mFogParam = PX2_ANY_AS(obj.Data, Float2);
+		Float4 lastParam = Float4(mFogParam[0],mFogParam[1], mShineParam[0], mShineParam[1]);
+		PX2_GR.SetFogParam(lastParam);
+	}
+	else if ("FogColor" == obj.Name)
+	{
+		mFogColor = PX2_ANY_AS(obj.Data, Float3);
+		Float4 lastColor = Float4(mFogColor[0], mFogColor[1], mFogColor[2], 1.0f);
+		PX2_GR.SetFogColor(lastColor);
+	}
+	else if ("ShineParam" == obj.Name)
+	{
+		mShineParam = PX2_ANY_AS(obj.Data, Float2);
+		Float4 lastParam = Float4(mFogParam[0],mFogParam[1], mShineParam[0], mShineParam[1]);
+		PX2_GR.SetFogParam(lastParam);
 	}
 }
 //----------------------------------------------------------------------------
@@ -222,6 +299,26 @@ AmbientRegionActor::AmbientRegionActor (LoadConstructor value)
 	:
 TriggerActor(value)
 {
+	mHorAngle = 30.0f;
+	mVerAngle = 15.0f;
+	mLightIntensity = 1.0f;
+
+	mAmbientColor = Float3(0.4f, 0.4f, 0.4f);
+	mDirLightDiffColor = Float3(1.0f, 1.0f, 1.0f);
+	mLightSpecColor = Float3(0.5f, 0.5f, 0.5f);
+
+	mBakeShadowAngle = 0.0f; 
+
+	mFogParam = Float2(60.0f, 240.0f);
+	mFogColor = Float3::WHITE;
+
+	mBakeSkyLightColor = Float3::WHITE;
+
+	mAmbientScale = 1.0f;
+	mDiffuseScale = 1.0f;
+	mSpecularScale = 1.0f;
+
+	mShineParam = Float2(1.0f, 1.0f);
 }
 //----------------------------------------------------------------------------
 void AmbientRegionActor::Load (InStream& source)
@@ -239,6 +336,31 @@ void AmbientRegionActor::Load (InStream& source)
 	source.Read(mVerAngle);
 	source.ReadPointer(mLight);
 
+	int readedVersion = GetReadedVersion();
+	if (1 <= readedVersion)
+	{
+		source.Read(mBakeShadowAngle);
+	}
+	if (2 <= readedVersion)
+	{
+		source.ReadAggregate(mFogParam);
+		source.ReadAggregate(mFogColor);
+	}
+	if (3 <= readedVersion)
+	{
+		source.ReadAggregate(mBakeSkyLightColor);
+	}
+	if (4 <= readedVersion)
+	{
+		source.Read(mAmbientScale);
+		source.Read(mDiffuseScale);
+		source.Read(mSpecularScale);
+	}
+	if (5 <= readedVersion)
+	{
+		source.Read(mShineParam);
+	}
+
 	PX2_END_DEBUG_STREAM_LOAD(AmbientRegionActor, source);
 }
 //----------------------------------------------------------------------------
@@ -253,6 +375,9 @@ void AmbientRegionActor::Link (InStream& source)
 void AmbientRegionActor::PostLink ()
 {
 	TriggerActor::PostLink();
+
+	PX2_GR.SetFogParam(Float4(mFogParam[0],mFogParam[1], mShineParam[0], mShineParam[1]));
+	PX2_GR.SetFogColor(Float4(mFogColor[0], mFogColor[1], mFogColor[2], 1.0f));
 }
 //----------------------------------------------------------------------------
 bool AmbientRegionActor::Register (OutStream& target) const
@@ -281,6 +406,19 @@ void AmbientRegionActor::Save (OutStream& target) const
 	target.Write(mHorAngle);
 	target.Write(mVerAngle);
 	target.WritePointer(mLight);
+	
+	target.Write(mBakeShadowAngle);
+
+	target.WriteAggregate(mFogParam);
+	target.WriteAggregate(mFogColor);
+
+	target.WriteAggregate(mBakeSkyLightColor);
+
+	target.Write(mAmbientScale);
+	target.Write(mDiffuseScale);
+	target.Write(mSpecularScale);
+
+	target.WriteAggregate(mShineParam);
 
 	PX2_END_DEBUG_STREAM_SAVE(AmbientRegionActor, target);
 }
@@ -296,6 +434,49 @@ int AmbientRegionActor::GetStreamingSize (Stream &stream) const
 	size += sizeof(mHorAngle);
 	size += sizeof(mVerAngle);
 	size += PX2_POINTERSIZE(mLight);
+
+	if (stream.IsIn())
+	{
+		int readedVersion = GetReadedVersion();
+		if (1 <= readedVersion)
+		{
+			size += sizeof(mBakeShadowAngle);
+		}
+		if (2 <= readedVersion)
+		{
+			size += sizeof(mFogParam);
+			size += sizeof(mFogColor);
+		}
+		if (3 <= readedVersion)
+		{
+			size += sizeof(mBakeSkyLightColor);
+		}
+		if (4 <= readedVersion)
+		{
+			size += sizeof(mAmbientScale);
+			size += sizeof(mDiffuseScale);
+			size += sizeof(mSpecularScale);
+		}
+		if (5 <= readedVersion)
+		{
+			size += sizeof(mShineParam);
+		}
+	}
+	else
+	{
+		size += sizeof(mBakeShadowAngle);
+
+		size += sizeof(mFogParam);
+		size += sizeof(mFogColor);
+
+		size += sizeof(mBakeSkyLightColor);
+
+		size += sizeof(mAmbientScale);
+		size += sizeof(mDiffuseScale);
+		size += sizeof(mSpecularScale);
+
+		size += sizeof(mShineParam);
+	}
 
 	return size;
 }

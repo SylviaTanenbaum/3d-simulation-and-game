@@ -39,8 +39,6 @@ void SpeedBuf::Update (double appSeconds, double elapsedSeconds)
 
 	if (M_DOSTOP == mMode)
 	{
-		mCharacter->StopSpeed(true);
-		mCharacter->SetVelocity(AVector::ZERO);
 	}
 	else if (M_LASTING == mMode)
 	{
@@ -66,7 +64,7 @@ void SpeedBuf::OnAdded ()
 
 	if (M_DOSTOP == mMode)
 	{
-		mCharacter->StopSpeed(true);
+		mCharacter->AddStopSpeedTag(GetAddedIDString());
 		mCharacter->SetVelocity(AVector::ZERO);
 	}
 	else if (M_IMMEDIATE == mMode)
@@ -87,7 +85,7 @@ void SpeedBuf::OnRemoved ()
 	}
 	else
 	{
-		mCharacter->StopSpeed(false);
+		mCharacter->RemoveStopSpeedTag(GetAddedIDString());
 	}
 }
 //----------------------------------------------------------------------------
