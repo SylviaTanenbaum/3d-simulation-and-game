@@ -48,6 +48,8 @@
     <ClCompile Include="PX2DynamicBufferObject.cpp" />
     <ClCompile Include="PX2Float2Array.cpp" />
     <ClCompile Include="PX2FloatArray.cpp" />
+    <ClCompile Include="PX2FogColorConstant.cpp" />
+    <ClCompile Include="PX2FogParamConstant.cpp" />
     <ClCompile Include="PX2GlobalMaterial.cpp" />
     <ClCompile Include="PX2GraphicsRoot.cpp" />
     <ClCompile Include="PX2HalfFloat.cpp" />
@@ -188,6 +190,8 @@
     <ClInclude Include="PX2DynamicBufferObject.hpp" />
     <ClInclude Include="PX2Float2Array.hpp" />
     <ClInclude Include="PX2FloatArray.hpp" />
+    <ClInclude Include="PX2FogColorConstant.hpp" />
+    <ClInclude Include="PX2FogParamConstant.hpp" />
     <ClInclude Include="PX2GlobalMaterial.hpp" />
     <ClInclude Include="PX2Graphics.hpp" />
     <ClInclude Include="PX2GraphicsPre.hpp" />
