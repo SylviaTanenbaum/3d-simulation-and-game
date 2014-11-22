@@ -98,8 +98,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\PX2SDK\Library\$(PlatformToolset)\$(Platform)\$(Configuration);..\ThirdPartiesLibs\OGLES;..\ThirdPartiesLibs\Microsoft DirectX SDK %28June 2010%29\Lib\x86;..\ThirdPartiesLibs\pthread\lib\x86;..\ThirdPartiesLibs\FMOD\api\lib;..\Darwin\_OutPut</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PX2CoreD.lib;PX2MathematicsD.lib;PX2GraphicsOpenGLES2D.lib;PX2EventSystemD.lib;PX2UnityD.lib;PX2InputD.lib;PX2TerrainsD.lib;PX2Effect1D.lib;PX2UserInterfaceD.lib;PX2Net1D.lib;PX2SoundSystemD.lib;PX2GameD.lib;PX2AppFrameOpenGLES2D.lib;DarwinD.lib;fmodex_vc.lib;libEGL.lib;libGLESv2.lib;pthreadVC2.lib;pthreadVCE2.lib;pthreadVSE2.lib;xinput.lib;dinput8.lib;dxguid.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\PX2SDK\Library\$(PlatformToolset)\$(Platform)\$(Configuration);..\ThirdPartiesLibs\OGLES;..\ThirdPartiesLibs\Microsoft DirectX SDK %28June 2010%29\Lib\x86;..\ThirdPartiesLibs\pthread\lib\x86;..\ThirdPartiesLibs\FMOD\api\lib;..\TheGame\_OutPut</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PX2CoreD.lib;PX2MathematicsD.lib;PX2GraphicsOpenGLES2D.lib;PX2EventSystemD.lib;PX2UnityD.lib;PX2InputD.lib;PX2TerrainsD.lib;PX2Effect1D.lib;PX2UserInterfaceD.lib;PX2Net1D.lib;PX2SoundSystemD.lib;PX2GameD.lib;PX2AppFrameOpenGLES2D.lib;TheGameD.lib;fmodex_vc.lib;libEGL.lib;libGLESv2.lib;pthreadVC2.lib;pthreadVCE2.lib;pthreadVSE2.lib;xinput.lib;dinput8.lib;dxguid.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
